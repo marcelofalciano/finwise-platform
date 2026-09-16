@@ -530,12 +530,9 @@ function Entry({ onEnter }) {
                             React.createElement("input", { id: "fw-pass2", type: "password", value: form.pass, onChange: set("pass"), onKeyDown: onKey, placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" })))),
                     err ? React.createElement("p", { className: "err" }, err) : null,
                     React.createElement("button", { className: "fw-btn", onClick: submit, disabled: busy }, mode === "register" ? "Create account and start" : "Sign in"),
-                    React.createElement("p", { className: "note" },
-                        mode === "register"
-                            ? "Already a member? Use Member sign in above."
-                            : "New here? Create an account above.",
-                        " ",
-                        "Your account and progress are saved on this device."))))));
+                    React.createElement("p", { className: "note" }, mode === "register"
+                        ? "Already a member? Use Member sign in above."
+                        : "New here? Create an account above."))))));
 }
 /* ------------------------------------------------------------------ *
  *  Dashboard
