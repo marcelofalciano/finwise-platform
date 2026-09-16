@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>FinWise Academy Learning Platform</title>
+<meta name="description" content="FinWise Academy learning platform: modules, quizzes and action tasks." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>" />
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #F3F6F5; }
+  #boot { font-family: system-ui, sans-serif; color: #6B808F; font-size: 14px; padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="root"><div id="boot">Loading FinWise Academy&hellip;</div></div>
+<script type="text/babel" data-presets="react" data-type="module">
+
+const { useState, useEffect, useMemo, useRef } = React;
+
+/* localStorage, same shape as the artifact storage API */
+const LOCAL = {
+  get: async (k) => { const v = localStorage.getItem(k); return v === null ? null : { key: k, value: v }; },
+  set: async (k, v) => { localStorage.setItem(k, v); return { key: k, value: v }; },
+  delete: async (k) => { localStorage.removeItem(k); return { key: k, deleted: true }; },
+};
+
+/* icons */
+const Svg = ({ size = 16, color, children }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color || "currentColor"}
+       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none" }}>{children}</svg>
+);
+const Check = (p) => <Svg {...p}><polyline points="20 6 9 17 4 12" /></Svg>;
+const ChevronLeft = (p) => <Svg {...p}><polyline points="15 18 9 12 15 6" /></Svg>;
+const ChevronRight = (p) => <Svg {...p}><polyline points="9 18 15 12 9 6" /></Svg>;
+const X = (p) => <Svg {...p}><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></Svg>;
+const Lock = (p) => <Svg {...p}><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></Svg>;
+const Flame = (p) => <Svg {...p}><path d="M12 2c1 4 4 5 4 9a4 4 0 0 1-8 0c0-2 1-3 1-5-2 1-4 3-4 6a7 7 0 0 0 14 0c0-5-4-7-7-10z" /></Svg>;
+const Trophy = (p) => <Svg {...p}><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" /><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" /></Svg>;
+const Target = (p) => <Svg {...p}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></Svg>;
+const Circle = (p) => <Svg {...p}><circle cx="12" cy="12" r="9" /></Svg>;
+const CheckCircle2 = (p) => <Svg {...p}><circle cx="12" cy="12" r="9" /><polyline points="8 12 11 15 16 9" /></Svg>;
+const BookOpen = (p) => <Svg {...p}><path d="M2 5h7a3 3 0 0 1 3 3v11a2.5 2.5 0 0 0-2.5-2.5H2z" /><path d="M22 5h-7a3 3 0 0 0-3 3v11a2.5 2.5 0 0 1 2.5-2.5H22z" /></Svg>;
+const ListChecks = (p) => <Svg {...p}><polyline points="3 6 4.5 7.5 7 5" /><polyline points="3 13 4.5 14.5 7 12" /><line x1="10" y1="6" x2="21" y2="6" /><line x1="10" y1="13" x2="21" y2="13" /><line x1="10" y1="19" x2="21" y2="19" /></Svg>;
+const LogOut = (p) => <Svg {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></Svg>;
+const RotateCcw = (p) => <Svg {...p}><polyline points="3 3 3 9 9 9" /><path d="M3.5 15a9 9 0 1 0 2-9.5L3 9" /></Svg>;
+
+
+/* ------------------------------------------------------------------ *
+ *  Content: the three finished modules, parsed from the source PDFs.
+ * ------------------------------------------------------------------ */
+const CONTENT = [{"n":1,"title":"How the U.S. Credit System Works","subtitle":"Credit scores, credit history, payment behavior, and how your financial decisions affect your long- term opportunities in the United States.","meta":"10 Lessons · 15 Quiz Questions · 1 Action Task · Estimated time: 35 minutes · Level: Foundational","overview":[{"type":"p","text":"In the United States, your credit history is one of the most consequential financial records you will build. It affects whether you can rent an apartment, finance a car, access a credit card, or eventually buy a home. For adults who grew up outside the United States, the U.S. credit system can feel unfamiliar or opaque because it operates on different rules than credit systems in other countries. This module explains how the U.S. credit system works, what a credit score is and how it is calculated, how credit history is built over time, and what everyday financial decisions you can make to establish and maintain a healthy credit profile in the United States."},{"type":"callout","label":"Learning Objective","text":"By the end of this module, you will understand how the U.S. credit system works, how your credit score is calculated, and what specific financial behaviors contribute to building a strong credit history over time."}],"lessons":[{"n":1,"title":"What Is Credit and Why Does It Matter?","blocks":[{"type":"p","text":"Credit is the ability to borrow money or access goods and services now with the agreement to pay for them later. In the United States, credit is not just a financial tool; it is a signal that lenders, landlords, and financial institutions use to evaluate your reliability as a borrower and tenant. Unlike some countries where financial reliability is assessed primarily through savings or income documentation, the U.S. system places significant weight on your credit history, a record of how you have managed borrowed money and payment obligations over time. Why credit matters for daily life in the United States:"},{"type":"ul","items":["Renting an apartment: Most landlords check your credit report as part of the application process. A thin or poor credit history can result in denial or require a larger security deposit.","Opening utility accounts: Some utility providers check credit before activating service.","Financing a car: Auto loan interest rates are strongly influenced by your credit score. A higher score can help borrowers qualify for lower interest rates and, depending on the loan terms, lower monthly payments."]},{"type":"ul","items":["Applying for credit cards: Your credit score plays a major role in whether you are approved and what credit limit and interest rate you receive.","Eventually buying a home: Mortgage lenders use credit scores to determine loan eligibility and interest rates."]},{"type":"callout","label":"Key Insight","text":"In the U.S., having no credit history is nearly as limiting as having a poor credit history. Building credit intentionally from the moment you arrive is one of the most important financial steps you can take."}]},{"n":2,"title":"The Three Major Credit Bureaus","blocks":[{"type":"p","text":"Credit bureaus, also known as consumer reporting agencies, collect and maintain information about your borrowing and payment history and compile that information into credit reports. Credit scores are calculated by scoring models, such as FICO or VantageScore, using information contained in those credit reports. The three major credit bureaus in the United States are Equifax, Experian, and TransUnion. Each bureau collects data from lenders, credit card issuers, and other financial institutions. Because not all creditors report to all three bureaus, the information each bureau holds about you may differ slightly, which means your credit score may vary across bureaus."},{"type":"table","head":["Bureau","What to Know"],"rows":[["Equifax","One of the three major bureaus; used widely by mortgage lenders"],["Experian","Often used for auto loans and credit card applications"],["TransUnion","May be used in rental screening and certain permitted background review contexts"]]},{"type":"callout","label":"Educational Note","text":"Federal law guarantees at least one free report every 12 months from each nationwide bureau. The three bureaus currently provide free reports weekly through AnnualCreditReport.com, the only federally authorized source for free credit reports."}]},{"n":3,"title":"What Is a Credit Score?","blocks":[{"type":"p","text":"A credit score is a three-digit number, typically ranging from 300 to 850, that summarizes your creditworthiness based on your credit history. The most widely used credit scoring model in the United States is the FICO Score, developed by the Fair Isaac Corporation. FICO Score Ranges:"},{"type":"table","head":["Score Range","Rating","Practical Meaning"],"rows":[["800 – 850","Exceptional","Best rates and terms available"],["740 – 799","Very Good","Better than average rates"],["670 – 739","Good","Near or above average rates"],["580 – 669","Fair","Higher rates; fewer options"],["300 – 579","Poor","Credit options may be limited and borrowing terms may be less favorable"]]}]},{"n":4,"title":"How a Credit Score Is Calculated","blocks":[{"type":"p","text":"Score is calculated based on five categories, each weighted differently. Understanding these factors helps you understand which financial behaviors most directly affect your score.","lead":"Your FICO"},{"type":"p","text":"Approximate Factor Weights in a Typical FICO Score"},{"type":"table","head":["Factor","Approximate Weight"],"rows":[["Payment History","35% — the most important factor"],["Amounts Owed","30% — credit utilization is a key component of this category"],["Length of Credit History","15%"],["Credit Mix","10%"],["New Credit (Hard Inquiries)","10%"]]},{"type":"p","text":"Your payment history is the single most important factor in your credit score. It records whether you have paid your bills on time. A single missed or late payment can lower your score significantly and remain on your credit report for up to seven years. Paying every bill on time, every month, is the behavior most commonly associated with building and maintaining a strong credit history over time. Amounts Owed (30%) Credit utilization is the ratio of your current credit card balances to your total available credit limit. For example, if you have a credit card with a $1,000 limit and you are carrying a $400 balance, your utilization rate is 40%. Many credit education resources use 30% as a general benchmark for understanding utilization behavior. For example, if your total credit limit is $5,000 and your reported balance is $1,000, your utilization is 20%.","lead":"Payment History (35%)"},{"type":"callout","label":"Educational Note","text":"Keeping your balances low relative to your credit limit is a widely discussed principle in credit education."},{"type":"p","text":"Reviewing your balance before your statement closing date, rather than only at payment due date, helps you understand how utilization is reported to credit bureaus. Length of Credit History (15%) This factor considers how long your credit accounts have been open, including the age of your oldest account, the age of your newest account, and the average age of all accounts. The longer your credit history, the more data lenders have to evaluate your reliability. This is why it is generally advisable not to close old credit accounts unnecessarily. Credit Mix (10%) Credit mix refers to the variety of credit types you have, including revolving credit such as credit cards, and installment credit such as auto loans, student loans, or personal loans. Having a mix of credit types can be a positive signal, though it is not necessary to open accounts you do not need simply to improve this factor. New Credit / Hard Inquiries (10%) When you apply for new credit, the lender typically performs a hard inquiry on your credit report. Multiple hard inquiries in a short period can lower your score slightly. Soft inquiries, such as checking your own credit score, do not affect your score."}]},{"n":5,"title":"Building Credit History from Zero","blocks":[{"type":"p","text":"If you have recently arrived in the United States or are new to the U.S. credit system, you may have little or no credit history. The following approaches are commonly used to begin building a credit profile: Secured Credit Cards A secured credit card requires a cash deposit that typically becomes your credit limit. Because the risk to the lender is low, secured cards are generally accessible to people with no credit history. Using the card for small purchases and paying the full balance each month is a common way to begin establishing a payment history. Credit-Builder Loans Some credit unions and community banks offer credit-builder loans, which are small loans specifically designed to help people establish credit. The loan amount is held in a savings account while you make monthly payments, and the payment activity is reported to the credit bureaus. Becoming an Authorized User If you have a family member or close contact with a strong credit history, being added as an authorized user on their credit card account can help you benefit from their positive payment history. Reporting Rent and Utility Payments Some services allow you to report on-time rent and utility payments to credit bureaus, which can help build a credit history even without traditional credit products."},{"type":"callout","label":"Important Note","text":"Building credit takes time. A solid credit profile develops gradually over time through consistent on-time payments and responsible credit use. There are no shortcuts that permanently improve credit scores."}]},{"n":6,"title":"Understanding Your Credit Report","blocks":[{"type":"p","text":"Your credit report is the underlying document from which your credit score is calculated. It contains a detailed record of all your credit accounts, payment history, balances, credit inquiries, and public records such as bankruptcies. Reviewing your credit report regularly is an important financial habit. Federal law guarantees at least one free report every 12 months from each of the three major bureaus, and the bureaus currently provide free reports weekly through AnnualCreditReport.com."},{"type":"p","text":"What to look for when reviewing your credit report:"},{"type":"p","text":"If you find an error on your credit report, you have the right to dispute it with the credit bureau. The bureau is required to investigate and correct legitimate errors."},{"type":"ul","items":["Accounts you did not open, which may indicate identity theft or fraud;","Late payments that were actually paid on time, which may be reporting errors;","Accounts listed as open that you have already closed;","Incorrect personal information such as name, address, or Social Security Number;","Negative items that have exceeded the applicable reporting period and should no longer appear on your report."]}]},{"n":7,"title":"Protecting Your Credit","blocks":[{"type":"p","text":"Protecting your credit is as important as building it. Identity theft, unauthorized accounts, and reporting errors can damage your credit score even when your financial behavior is responsible. Freezing Your Credit You can place a free security freeze on your credit file with each bureau, which prevents new lenders from accessing your report without your permission. This is one of the most effective tools for protecting against identity theft and unauthorized credit applications. Setting Up Fraud Alerts A fraud alert notifies lenders to take extra steps to verify your identity before opening new accounts. You only need to contact one bureau to place a fraud alert, and that bureau is required to notify the other two. Monitoring Your Credit Regularly Many banks and credit card issuers now offer free credit score monitoring as a feature of their accounts. Using these tools alongside your free credit reports from AnnualCreditReport.com gives you ongoing visibility into your credit profile."}]},{"n":8,"title":"Common Misunderstandings About Credit","blocks":[{"type":"table","head":["Common Misunderstanding","More Accurate Understanding"],"rows":[["Checking my own credit score will lower it.","Checking your own score is a soft inquiry and does not affect your score."],["Carrying a balance builds credit faster.","Paying your balance in full each month demonstrates responsible use without paying unnecessary interest."],["Closing old credit cards improves my score.","Closing a credit card can sometimes lower your score, particularly because it reduces your total available credit and may increase your credit utilization ratio."],["I need high income to have good credit.","Income is not a factor in credit score calculations."],["Paying off a collection account removes it from my report.","Paid collections may still appear on your report for up to seven years from the original delinquency date."],["My credit score in another country transfers to the U.S.","Credit histories generally do not transfer across countries. You begin from scratch in the U.S."]]}]},{"n":9,"title":"Credit Vocabulary Reference","blocks":[{"type":"p","text":"The U.S. credit system uses specific terminology that is helpful to understand before applying for credit or reviewing your credit report."},{"type":"table","head":["Term","Definition"],"rows":[["Annual Percentage Rate (APR)","The yearly cost of borrowing money, expressed as a percentage"],["Credit Limit","The maximum amount you are authorized to borrow on a credit account"],["Credit Utilization","The percentage of your available credit that you are currently using"],["Grace Period","The time after your statement closes during which you can pay your balance in full without interest"],["Hard Inquiry","A credit check initiated by a lender when you apply for credit; affects your score"],["Soft Inquiry","A credit check that does not affect your score, such as checking your own credit"],["Charge-Off","When a creditor writes off a debt as a loss; remains on your report for up to seven years"],["Credit Freeze","A restriction placed on your credit file to prevent unauthorized new accounts from being opened"]]}]},{"n":10,"title":"Reflection and Action Task","blocks":[{"type":"p","text":"To close this module, take a few minutes to reflect on what you have learned before completing the action task. There are no right or wrong answers. The goal is to connect the content to your own financial situation."},{"type":"callout","label":"Learning Objective","text":"Apply what you learned in this module to your own financial situation through one concrete, low- stakes action this week."}]}],"quiz":[{"prompt":"Which of the following best describes what a credit score measures?","options":[{"text":"Your total savings and assets","correct":false},{"text":"Your reliability in repaying borrowed money based on past behavior","correct":true},{"text":"Your annual income relative to your expenses","correct":false},{"text":"The number of credit cards you currently hold","correct":false}],"feedback":"A credit score summarizes your creditworthiness based on your history of managing borrowed money and payment obligations — not your income or assets."},{"prompt":"What is the name of the most widely used credit scoring model in the United States?","options":[{"text":"VantageScore","correct":false},{"text":"FICO Score","correct":true},{"text":"Equifax Score","correct":false},{"text":"TransUnion Index","correct":false}],"feedback":"The FICO Score, developed by the Fair Isaac Corporation, is the most widely used credit scoring model in the United States."},{"prompt":"Which credit score range is generally considered 'Good' by most U.S. lenders?","options":[{"text":"300 – 579","correct":false},{"text":"580 – 669","correct":false},{"text":"670 – 739","correct":true},{"text":"800 – 850","correct":false}],"feedback":"A score of 670 to 739 is generally considered Good. Scores of 740 and above are considered Very Good or Exceptional."},{"prompt":"Which factor has the greatest impact on your FICO credit score?","options":[{"text":"Length of credit history (15%)","correct":false},{"text":"Credit mix (10%)","correct":false},{"text":"Payment history (35%)","correct":true},{"text":"Amounts owed (30%)","correct":false}],"feedback":"Payment history is the single most important factor, accounting for 35% of your FICO score. Paying every bill on time is the most reliable way to build and protect your score."},{"prompt":"What is credit utilization?","options":[{"text":"The number of credit applications you have submitted","correct":false},{"text":"The ratio of your current balances to your total available credit limit","correct":true},{"text":"The total amount of debt you currently owe across all accounts","correct":false},{"text":"The average age of all your open credit accounts","correct":false}],"feedback":"Credit utilization is the ratio of your current credit card balances to your total available credit limit. It is a key component of the Amounts Owed category, which accounts for 30% of your FICO score."},{"prompt":"How long can a missed payment remain on your credit report?","options":[{"text":"One year","correct":false},{"text":"Three years","correct":false},{"text":"Up to seven years","correct":true},{"text":"Up to ten years","correct":false}],"feedback":"A missed or late payment can remain on your credit report for up to seven years from the date of the missed payment."},{"prompt":"What is a hard inquiry?","options":[{"text":"When you check your own credit score","correct":false},{"text":"When a lender checks your credit report after you apply for credit","correct":true},{"text":"When a landlord verifies your rental history","correct":false},{"text":"When your bank reviews your account activity","correct":false}],"feedback":"A hard inquiry occurs when a lender checks your credit report in response to a credit application you submitted. It may lower your score slightly."},{"prompt":"Which of the following is the only federally authorized source for free credit reports?","options":[{"text":"CreditKarma.com","correct":false},{"text":"Experian.com/free","correct":false},{"text":"AnnualCreditReport.com","correct":true},{"text":"FICO.com/free","correct":false}],"feedback":"AnnualCreditReport.com is the only federally authorized website for free credit reports. You are entitled to at least one free report every 12 months from each of the three major bureaus."},{"prompt":"Which of the following is a recommended first step for someone with no U.S. credit history?","options":[{"text":"Apply immediately for an unsecured premium credit card","correct":false},{"text":"Open a secured credit card and pay the balance in full each month","correct":true},{"text":"Take out a personal loan for a large amount to show borrowing capacity","correct":false},{"text":"Wait two years before applying for any credit","correct":false}],"feedback":"A secured credit card is a common starting point for building U.S. credit history. It requires a deposit, is accessible to people with no history, and reports payment activity to the credit bureaus."},{"prompt":"What happens to your credit score when you close an old credit card account?","options":[{"text":"Your score always improves because you have fewer accounts","correct":false},{"text":"Your score may decrease because your available credit decreases, which may increase your credit utilization ratio","correct":true},{"text":"Your score is unaffected because only payment history matters","correct":false},{"text":"Your score improves because lenders prefer fewer open accounts","correct":false}],"feedback":"Closing an old credit card reduces your total available credit, which can increase your credit utilization ratio and potentially lower your score. The overall impact depends on the rest of your credit profile."},{"prompt":"Which of the following actions does NOT affect your credit score?","options":[{"text":"Missing a credit card payment","correct":false},{"text":"Applying for a new credit card","correct":false},{"text":"Checking your own credit score","correct":true},{"text":"Carrying a high balance on your credit card","correct":false}],"feedback":"Checking your own credit score is a soft inquiry and does not affect your score. Hard inquiries from lenders and missed payments do affect your score."},{"prompt":"What is a credit freeze?","options":[{"text":"A temporary reduction in your credit limit imposed by your lender","correct":false},{"text":"A restriction you place on your credit file to prevent unauthorized new accounts","correct":true},{"text":"A legal hold placed on your credit when you file for bankruptcy","correct":false},{"text":"A pause in interest charges offered by lenders during financial hardship","correct":false}],"feedback":"A credit freeze is a restriction you can place on your own credit file that prevents new lenders from accessing your report without your permission. It is one of the most effective tools against identity theft."},{"prompt":"What does it mean when a creditor 'charges off' a debt?","options":[{"text":"The creditor has forgiven the debt and you no longer owe it","correct":false},{"text":"The creditor has written off the debt as a loss; the debt may still be collected and stays on your report","correct":true},{"text":"The creditor has transferred the debt to a government agency","correct":false},{"text":"The creditor has agreed to a lower settlement amount","correct":false}],"feedback":"A charge-off means the creditor has written off the debt as a loss on their books, but you still owe the money. It remains on your credit report for up to seven years and can significantly damage your score."},{"prompt":"Under federal law, what is the minimum frequency at which you are entitled to a free credit report from each of the three major bureaus?","options":[{"text":"Once every three years per bureau","correct":false},{"text":"Once per year per bureau","correct":true},{"text":"Twice per year per bureau","correct":false},{"text":"Whenever you request one, at no charge","correct":false}],"feedback":"Federal law guarantees a minimum of one free report every 12 months from each of the three major bureaus. In practice, Equifax, Experian, and TransUnion currently provide free reports weekly through AnnualCreditReport.com."},{"prompt":"Which of the following best describes the relationship between credit history length and your credit score?","options":[{"text":"Longer credit history always results in a higher score, regardless of other factors","correct":false},{"text":"Credit history length has no meaningful effect on your score","correct":false},{"text":"A longer credit history generally helps your score because it gives lenders more data to evaluate your reliability","correct":true},{"text":"Credit history length only matters for mortgage applications, not everyday credit","correct":false}],"feedback":"Length of credit history accounts for 15% of your FICO score. A longer history generally helps because it provides more data about your financial behavior over time."}],"quizIntro":"Answer the following 15 questions to test your understanding of the U.S. credit system. Select the best answer for each question.","summary":[{"type":"p","text":"In this module, you learned:"},{"type":"ul","items":["What credit is and why it matters in the United States for renting, financing, and daily financial life;","How the three major credit bureaus — Equifax, Experian, and TransUnion — collect and report your credit data;","How credit scores are calculated across five categories: payment history, amounts owed (including credit utilization), length of history, credit mix, and new inquiries;","What the FICO score ranges mean in practice and how lenders interpret them;","How to begin building a credit history in the United States through secured cards, credit- builder loans, authorized user status, and rent reporting;","How to review your credit report, identify errors, and protect yourself against fraud;","Common misunderstandings about the U.S. credit system and more accurate perspectives on each;","Key credit vocabulary terms used in the U.S. financial system."]}],"reflection":["What was your biggest insight about how the U.S. credit system works? Was there anything that surprised you or that you had not understood correctly before?","What is one credit habit you want to build or change based on what you learned in this module? Be as specific as possible.","What question do you still have about credit scores or credit history that you want to explore further?"],"actionTask":{"title":"Check Your U.S. Credit Standing This Week","steps":["Review your credit report through AnnualCreditReport.com, the only federally authorized source for free credit reports, and note which factors in your credit profile require further learning.","If you have existing accounts, review them for accuracy. If you do not yet have a credit history, identify one realistic option from Lesson 5 that fits your current situation.","Write down one specific credit habit you want to practice consistently over the next 30 days."]},"disclaimer":"This module is educational and intended to help you understand how the U.S. credit system works. It does not constitute legal, financial, investment, or credit repair advice. For personalized guidance on your specific financial situation, consult a qualified financial professional.","practiceIntro":"","taskPurpose":"","taskInstruction":"Complete the following three steps before the end of the week:"},{"n":2,"title":"Credit Card Usage and Behavior","subtitle":"Statement cycles, credit utilization, APR and fees, payment timing, and how to use credit cards without letting habits control your finances.","meta":"10 Lessons · 15 Quiz Questions · 1 Action Task · Estimated time: 35 minutes · Level: Foundational","overview":[{"type":"p","text":"Credit cards are one of the most common financial tools in the United States. Used thoughtfully, they can provide convenience, help establish and maintain a credit history, and offer flexibility when managing everyday expenses. Used without a clear understanding of how they work, they can also create unnecessary interest charges, fees, and long-term financial stress."},{"type":"p","text":"This module explains how credit cards work in practice, including how statement cycles and payment due dates interact, how credit utilization is calculated, how APR differs from fees, and how payment timing can affect both your finances and your credit profile."},{"type":"p","text":"The goal is to understand how credit cards work well enough to make intentional decisions about when and how to use them."},{"type":"callout","label":"Learning Objective","text":"By the end of this module, you will understand how credit card accounts work, how balances and payments are reported, how interest and fees affect the cost of using credit, and what everyday behaviors can help you use credit cards responsibly."}],"lessons":[{"n":1,"title":"How Credit Cards Work","blocks":[{"type":"p","text":"A credit card is a revolving form of credit that allows you to make purchases using money provided by the card issuer, with an agreement to repay what you borrow. Unlike a debit card, which generally draws money directly from your bank account, a credit card creates a balance that you are responsible for repaying."},{"type":"p","text":"When you use a credit card, several things happen:"},{"type":"ul","items":["You make a purchase using the card.","The purchase is added to your outstanding balance.","The card issuer tracks your transactions during a billing period.","At the end of that period, the issuer creates a statement.","You receive a minimum payment and a payment due date.","You can generally pay the full statement balance, pay part of it, or in some circumstances pay only the minimum."]},{"type":"callout","label":"Key Insight","text":"A credit card does not give you additional income. It gives you access to borrowed funds that must eventually be repaid. The most important habit is to think about a credit card purchase as money you are responsible for paying back, not as money you have earned or received."}]},{"n":2,"title":"Statement Cycles and Billing Statements","blocks":[{"type":"p","text":"Credit card issuers organize transactions into billing cycles, also called statement cycles. A billing cycle is a period during which purchases, payments, credits, and other account activity are recorded. At the end of the cycle, the issuer generates a statement showing information such as:"},{"type":"ul","items":["Purchases and other transactions;","Payments and credits;","The statement balance;","The minimum payment due;","The payment due date;","Applicable interest charges and fees."]},{"type":"p","text":"Statement Balance and Current Balance Your statement balance is generally the amount shown as owed when the billing cycle closes. Your current balance may include transactions that occurred after the statement closed."},{"type":"p","text":"Example: your statement closes on June 20 with a statement balance of $600. You then make another $100 purchase on June 23. Your statement balance remains $600, while your current balance may show $700."},{"type":"callout","label":"Key Insight","text":"Understanding the difference between the statement balance and the current balance can make credit card payments much easier to manage."}]},{"n":3,"title":"Payment Due Dates, Minimum Payments, and the Grace Period","blocks":[{"type":"p","text":"Every credit card statement includes a payment due date. The minimum payment is the smallest amount the issuer requires you to pay by the due date to keep the account from becoming delinquent, subject to the terms of the account."},{"type":"p","text":"Paying only the minimum can keep an account current, but it may cause a balance to remain outstanding for a longer period and can result in significant interest costs."},{"type":"p","text":"Example Statement balance: $1,000. Minimum payment: $40. Payment due date: July 15. Paying $40 may satisfy the minimum payment requirement, but the remaining balance may continue to accrue interest depending on the account terms."},{"type":"p","text":"Educational Note: What a grace period is Most credit cards provide a grace period, which is the time between the statement closing date and the payment due date during which you can pay the statement balance in full without being charged interest on new purchases. Grace periods generally apply only when the previous balance was paid in full, and they typically do not apply to cash advances. Whether your account provides one, and under what conditions, is stated in your account terms."},{"type":"callout","label":"Key Insight","text":"The minimum payment is a requirement, not a recommended spending target."}]},{"n":4,"title":"APR and the Cost of Carrying a Balance","blocks":[{"type":"p","text":"APR, or Annual Percentage Rate, represents the annualized cost of borrowing under the applicable terms of a credit account. Credit card APRs can be relatively high compared with many other forms of borrowing. If you carry a balance from one billing cycle to another, interest charges may increase the cost of your purchases."},{"type":"p","text":"APR and Fees Are Different APR relates to the cost of borrowing expressed as an annual rate. Fees are specific charges that may apply under the terms of the account. Examples of fees can include:"},{"type":"ul","items":["Annual fees;","Late payment fees;","Balance transfer fees;","Cash advance fees;","Foreign transaction fees."]},{"type":"callout","label":"Key Insight","text":"A credit card with a low annual fee is not necessarily inexpensive if you regularly carry a balance at a high APR. A card with an annual fee is not automatically a poor financial choice either; what matters is how you use the account."}]},{"n":5,"title":"Credit Utilization and Why It Matters","blocks":[{"type":"p","text":"Credit utilization refers to the amount of revolving credit you are using relative to your available credit limits."},{"type":"p","text":"Example: credit limit $5,000; reported balance $1,000; utilization 20%. The calculation is $1,000 divided by $5,000, which equals 20%."},{"type":"p","text":"Credit utilization is part of the Amounts Owed category used in FICO scoring, which accounts for approximately 30% of a FICO score. A high balance relative to your available limit can indicate greater reliance on revolving credit and may negatively affect your credit score."},{"type":"callout","label":"Educational Note","text":"Your credit card balance can change throughout the month. The balance reported to the credit bureaus is generally the one on your statement closing date, which may differ from the balance you see immediately after making a payment. Keeping reported utilization below roughly 30% is a guideline frequently cited by credit educators; it is a general reference point, not a rule set by law."},{"type":"callout","label":"Key Insight","text":"Using a credit card does not automatically hurt your credit. What matters is the relationship between your balances and your available credit, together with your broader credit behavior."}]},{"n":6,"title":"Payment Timing and Statement Closing Dates","blocks":[{"type":"p","text":"Many people assume that the only important date on a credit card is the payment due date. Two dates are particularly useful to understand."},{"type":"p","text":"Statement Closing Date The date on which the billing cycle ends and the statement balance is generally determined. This is also the balance typically reported to the credit bureaus."},{"type":"p","text":"Payment Due Date The date by which the required payment must be made."},{"type":"p","text":"Example: statement closes August 10; payment due September 5. Purchases made before August 10 may appear on that statement, while purchases made after the closing date may appear on the next statement."},{"type":"callout","label":"Key Insight","text":"You do not need to pay your credit card before every purchase. The goal is to understand your billing cycle and maintain a payment routine that prevents missed payments and unnecessary interest."}]},{"n":7,"title":"Using Credit Cards Without Creating Debt","blocks":[{"type":"p","text":"Credit cards can become difficult to manage when spending decisions are separated from the ability to repay. A useful framework is to ask three questions before making a significant purchase."},{"type":"ol","items":["Can I afford this purchase? Consider whether the expense fits within your available financial resources.","When will I repay it? Know whether you expect to pay the purchase in full or carry a balance.","What will it actually cost? If you carry the balance, consider the interest and other applicable costs."]},{"type":"p","text":"Common Warning Signs"},{"type":"ul","items":["Regularly making only minimum payments;","Using one credit card to pay another debt;","Consistently approaching your credit limit;","Relying on credit cards for routine expenses you cannot otherwise afford;","Avoiding checking your balance or statements;","Accumulating balances faster than you can repay them."]},{"type":"callout","label":"Key Insight","text":"The issue is not using credit. The issue is allowing credit use to become disconnected from your ability to repay."}]},{"n":8,"title":"Common Credit Card Fees and How to Avoid Them","blocks":[{"type":"p","text":"Late Payment Fees A late payment fee may apply when you fail to make the required payment by the applicable due date. A sufficiently late payment may also be reported to the credit bureaus and negatively affect your credit history."},{"type":"p","text":"Annual Fees Some credit cards charge an annual fee simply for maintaining the account. A card with an annual fee may still be worthwhile if the benefits justify the cost."},{"type":"p","text":"Foreign Transaction Fees Some cards charge fees for transactions processed outside the United States or in foreign currencies. Understanding the terms before traveling can prevent unexpected costs."},{"type":"p","text":"Cash Advance Fees Using a credit card to obtain cash can involve additional fees and interest terms that differ from ordinary purchases, and cash advances generally do not benefit from the grace period."},{"type":"callout","label":"Key Insight","text":"Fees are part of the price of a financial product. Reading the account terms before using a card can help you understand what you are actually paying for."}]},{"n":9,"title":"Credit Card Habits That Support Financial Health","blocks":[{"type":"p","text":"Responsible credit card behavior is usually based on consistency rather than complicated strategies. Helpful habits include:"},{"type":"p","text":"Pay on time Set reminders or automatic payments so that you do not accidentally miss a due date."},{"type":"p","text":"Monitor your balance Check your account regularly rather than waiting for the monthly statement."},{"type":"p","text":"Understand your statement Review transactions, fees, interest charges, and the amount due."},{"type":"p","text":"Keep utilization under control Avoid consistently using a large portion of your available revolving credit."},{"type":"p","text":"Avoid unnecessary interest When financially feasible, paying the statement balance in full can help avoid interest on purchases when the account provides a grace period."},{"type":"p","text":"Review your account terms Credit card terms can differ. Understand the APR, fees, rewards conditions, and other relevant terms of your own account."},{"type":"callout","label":"Key Insight","text":"The strongest credit card strategy is often simple: spend intentionally, monitor your account, pay on time, and understand the cost of borrowing."}]},{"n":10,"title":"Common Misunderstandings About Credit Cards","blocks":[{"type":"p","text":"The table below contrasts common beliefs about credit cards with a more accurate understanding of how they work."},{"type":"table","head":["Common Misunderstanding","More Accurate Understanding"],"rows":[["Carrying a balance every month builds credit faster.","You generally do not need to carry a balance or pay interest to build credit."],["Paying only the minimum is always the best strategy.","The minimum keeps the account current, but paying more can reduce interest costs and repayment time."],["A credit card is basically free money.","A credit card provides access to borrowed funds that must be repaid."],["Using a credit card automatically hurts your credit.","Responsible credit card use can contribute to a healthy credit profile."],["I need to pay my balance immediately after every purchase.","A consistent payment routine is usually sufficient; understanding statement and due dates matters more."],["A high credit limit means I can afford to spend more.","Your credit limit is the issuer’s limit, not your personal spending budget."],["APR and annual fees are the same thing.","APR relates to borrowing costs; fees are separate charges specified by the account terms."],["Rewards always make a credit card worthwhile.","Rewards may have value, but they should not justify unnecessary spending or interest costs."]]},{"type":"callout","label":"Key Insight","text":"Most credit card mistakes come from a small number of misunderstandings about how balances, interest, and reporting actually work. Correcting them is usually enough to change the outcome."}]}],"quiz":[{"prompt":"Which of the following best describes a credit card?","options":[{"text":"A bank account used exclusively for purchases","correct":false},{"text":"A revolving form of credit that allows you to borrow money and repay it later","correct":true},{"text":"A savings account with a spending limit","correct":false},{"text":"A government benefit program","correct":false}],"feedback":"A credit card provides access to revolving credit. Purchases create a balance that the cardholder is responsible for repaying."},{"prompt":"What is a billing cycle?","options":[{"text":"The period during which a credit card is inactive","correct":false},{"text":"The period during which transactions are recorded before a statement is generated","correct":true},{"text":"The amount of time before a credit card expires","correct":false},{"text":"The period during which no interest can ever be charged","correct":false}],"feedback":"A billing cycle is the period in which account activity is accumulated before the issuer generates a statement."},{"prompt":"What is the statement balance?","options":[{"text":"The maximum amount you can borrow","correct":false},{"text":"The balance shown on your statement when the billing cycle closes","correct":true},{"text":"The minimum amount you must spend each month","correct":false},{"text":"Your total annual income","correct":false}],"feedback":"The statement balance reflects the amount reported on the statement for that billing cycle."},{"prompt":"What is the minimum payment?","options":[{"text":"The amount you must spend each month","correct":false},{"text":"The smallest payment required by the issuer by the due date, subject to the account terms","correct":true},{"text":"The total amount of interest charged","correct":false},{"text":"Your available credit limit","correct":false}],"feedback":"The minimum payment is the required minimum amount due. Paying only the minimum can leave a balance outstanding and may result in additional interest costs."},{"prompt":"What does APR measure?","options":[{"text":"Your annual income","correct":false},{"text":"Your credit limit","correct":false},{"text":"The annualized cost of borrowing under the applicable terms","correct":true},{"text":"The percentage of your credit limit that you have used","correct":false}],"feedback":"APR, or Annual Percentage Rate, expresses the annualized cost of borrowing under the applicable account terms."},{"prompt":"What is credit utilization?","options":[{"text":"The number of credit cards you own","correct":false},{"text":"The ratio of revolving credit balances to available credit limits","correct":true},{"text":"The interest rate on your credit card","correct":false},{"text":"The number of purchases you make each month","correct":false}],"feedback":"Credit utilization measures how much revolving credit you are using relative to the credit available to you."},{"prompt":"If your credit limit is $5,000 and your reported balance is $1,000, what is your credit utilization?","options":[{"text":"5%","correct":false},{"text":"10%","correct":false},{"text":"20%","correct":true},{"text":"50%","correct":false}],"feedback":"$1,000 divided by $5,000 equals 20%. The reported balance represents 20% of the available credit limit."},{"prompt":"Which date generally determines the balance reported to the credit bureaus?","options":[{"text":"The payment due date","correct":false},{"text":"The statement closing date","correct":true},{"text":"The date your credit card expires","correct":false},{"text":"The date your credit score is calculated","correct":false}],"feedback":"The statement closing date marks the end of the billing cycle and is used to generate the statement for that period."},{"prompt":"Which statement about carrying a balance is accurate?","options":[{"text":"You must carry a balance to build credit","correct":false},{"text":"You generally do not need to carry a balance or pay interest to build credit","correct":true},{"text":"Carrying a larger balance always improves your credit score","correct":false},{"text":"Carrying a balance eliminates all credit card fees","correct":false}],"feedback":"You generally do not need to carry a balance or pay interest to establish responsible credit behavior."},{"prompt":"What can happen when your balance is high relative to your credit limit?","options":[{"text":"Your credit limit automatically increases","correct":false},{"text":"Your credit utilization may increase and potentially affect your credit score negatively","correct":true},{"text":"Your APR automatically decreases","correct":false},{"text":"Your credit card becomes a debit card","correct":false}],"feedback":"High utilization can negatively affect credit scores. Monitoring balances relative to available credit is therefore an important credit habit."},{"prompt":"Which of the following is a fee charged by some issuers simply for maintaining the account?","options":[{"text":"Credit utilization","correct":false},{"text":"Statement balance","correct":false},{"text":"Annual fee","correct":true},{"text":"Credit limit","correct":false}],"feedback":"An annual fee is a charge imposed by some credit card issuers for maintaining an account."},{"prompt":"What is one consequence of paying only the minimum payment?","options":[{"text":"It automatically lowers your credit limit","correct":false},{"text":"It can leave a balance outstanding that may continue to generate interest","correct":true},{"text":"It cancels your credit card rewards","correct":false},{"text":"It prevents the credit card company from reporting your account","correct":false}],"feedback":"Paying only the minimum may keep the account current, but an outstanding balance can remain and generate additional interest under the account terms."},{"prompt":"Which habit most directly reduces the risk of a missed payment?","options":[{"text":"Increasing your credit limit","correct":false},{"text":"Setting payment reminders or automatic payments","correct":true},{"text":"Opening several new credit cards","correct":false},{"text":"Ignoring monthly statements","correct":false}],"feedback":"Payment reminders and automatic payments can help reduce the risk of accidentally missing a payment due date."},{"prompt":"What does a credit limit represent?","options":[{"text":"The amount of money you have saved","correct":false},{"text":"The maximum amount the issuer allows you to borrow on the account","correct":true},{"text":"The amount you should spend every month","correct":false},{"text":"The amount of interest you owe","correct":false}],"feedback":"A credit limit represents the maximum amount of revolving credit available on the account. It does not represent what you can necessarily afford to spend."},{"prompt":"Which approach best summarizes responsible credit card use?","options":[{"text":"Use as much of the available credit as possible","correct":false},{"text":"Carry a balance every month to build credit","correct":false},{"text":"Spend intentionally, monitor the account, pay on time, and understand the cost of borrowing","correct":true},{"text":"Open multiple cards whenever your balance increases","correct":false}],"feedback":"Responsible credit card use combines intentional spending, regular account monitoring, timely payments, and an understanding of interest and fees."}],"quizIntro":"Answer the following 15 questions to test your understanding of credit card usage and behavior. Select the best answer for each question.","summary":[{"type":"p","text":"In this module, you learned:"},{"type":"ul","items":["How credit cards work as a form of revolving credit;","How billing cycles, statement closing dates, and payment due dates interact;","The difference between a statement balance, a current balance, and a minimum payment;","What a grace period is and when it applies;","What APR means and how interest can increase the cost of borrowing;","How credit utilization is calculated and why it matters;","How payment timing affects reported balances and credit utilization;","Common credit card fees and how to recognize unnecessary costs;","Practical habits for using credit cards without allowing spending to become unmanageable;","Common misunderstandings about credit card usage and a more accurate perspective on each;","How to review a credit card statement and identify one concrete habit to improve."]}],"reflection":["What was your biggest insight about how credit cards actually work? Was there anything about statement balances, due dates, utilization, APR, or fees that you previously misunderstood?","What is one credit card habit you want to build or change based on what you learned? Be as specific as possible.","What question do you still have about credit card costs, payment timing, or responsible credit card use?"],"actionTask":{"title":"Review One Credit Card Statement","steps":["Review one recent credit card statement. Identify the statement closing date, statement balance, minimum payment, payment due date, APR, and any fees or interest charges.","Review your recent spending. Identify at least one purchase category where you could make your spending more intentional.","Choose one credit card habit to practice for the next 30 days. Examples include checking your account once a week, setting up payment reminders, paying the statement balance in full when financially feasible, monitoring your credit utilization, or reviewing your statement before making the next month’s purchases."]},"disclaimer":"This module is educational and intended to help you understand how credit cards work and how everyday credit card behavior can affect your finances. It does not constitute legal, financial, investment, or credit repair advice. For personalized guidance on your specific financial situation, consult a qualified financial professional.","practiceIntro":"To close this module, take a few minutes to reflect on what you have learned before completing the action task. There are no right or wrong answers. The goal is to connect the content to your own financial behavior.","taskPurpose":"Apply what you learned in this module to your own financial situation through one concrete, low-stakes action this week.","taskInstruction":"Complete the following three steps before the end of the week:"},{"n":3,"title":"Budgeting and Recurring Expenses","subtitle":"How to distinguish intentional expenses from habitual ones, identify recurring costs, and plan for irregular expenses before they become financial shocks.","meta":"10 Lessons · 15 Quiz Questions · 1 Action Task · Estimated time: 35 minutes · Level: Foundational","overview":[{"type":"p","text":"A budget is a plan for money you have not spent yet. It is a way to understand where your money goes, to separate necessary expenses from discretionary ones, and to make spending decisions in advance instead of reconstructing them at the end of the month."},{"type":"p","text":"Most financial difficulty does not come from one unusually large purchase. It develops through recurring expenses, automatic subscriptions, habitual spending, and irregular costs that were predictable but never planned for."},{"type":"p","text":"This module explains how to build a practical budget, how to identify recurring expenses and evaluate whether they still provide value, how to tell intentional spending from habitual spending, and how to prepare for irregular expenses before they arrive."},{"type":"callout","label":"Learning Objective","text":"By the end of this module, you will understand how to organize income and expenses into a practical budget, identify recurring and habitual costs, distinguish needs from discretionary spending and financial priorities, and plan ahead for irregular expenses."}],"lessons":[{"n":1,"title":"What Is a Budget?","blocks":[{"type":"p","text":"A budget is often described as a way to spend less. That description is incomplete. A budget is a decision- making tool: it tells your money where to go before the month begins, so that spending reflects what you decided rather than what happened."},{"type":"p","text":"A practical budget accounts for six categories:"},{"type":"ul","items":["Income: the money you actually receive after taxes and payroll deductions, often called take-home pay.","Fixed expenses: costs that stay roughly the same each month, such as rent and insurance.","Variable expenses: necessary costs whose amount changes, such as groceries, utilities, and transportation.","Discretionary expenses: spending that improves comfort or enjoyment but is not required.","Savings and goals: money set aside deliberately, including emergency savings and specific objectives.","Irregular expenses: costs that do not occur monthly but are largely predictable, such as annual premiums and car maintenance."]},{"type":"callout","label":"Key Insight","text":"A budget is a decision-making tool. Its purpose is to help you decide where your money should go before it is spent."}]},{"n":2,"title":"Fixed and Variable Expenses","blocks":[{"type":"p","text":"Fixed expenses stay approximately constant from month to month. Variable expenses change with use, season, or choice. Both can be necessary and both can be reduced, but they behave differently in a budget: fixed expenses are easier to plan and harder to change quickly, while variable expenses are harder to predict and easier to adjust."},{"type":"table","head":["Fixed expenses","Variable expenses"],"rows":[["Rent or mortgage payment","Groceries"],["Insurance premiums","Transportation and fuel"],["Minimum debt payments","Utilities such as electricity and water"]]},{"type":"p","text":"Certain subscriptions and memberships Dining out and entertainment One distinction matters more than the labels: fixed does not mean necessary. A monthly subscription is a fixed expense because the amount repeats, but it may be entirely discretionary. Rent is both fixed and necessary. Grouping expenses by behavior (fixed or variable) and by purpose (necessary, discretionary, or a priority) gives you two useful views of the same budget."},{"type":"callout","label":"Key Insight","text":"Fixed describes how an expense behaves, not how important it is. Some of the easiest savings come from fixed expenses that were never necessary."}]},{"n":3,"title":"Recurring Expenses and the Annual View","blocks":[{"type":"p","text":"A recurring expense is any cost that repeats on a schedule: monthly, quarterly, or annually. Common examples include streaming services, gym memberships, insurance premiums, phone plans, software subscriptions, professional memberships, and automatic payments set up once and rarely reviewed."},{"type":"p","text":"Recurring expenses are easy to underestimate because they are presented monthly. The monthly figure feels small; the annual figure is the real commitment."},{"type":"table","head":["Monthly cost","Annual cost"],"rows":[["$9.99","About $120"],["$15","$180"],["$25","$300"],["$50","$600"],["$120","$1,440"]]},{"type":"p","text":"Example: three subscriptions at $15, $12, and $9 per month cost $36 monthly and $432 per year. Whether that is a good use of $432 is a legitimate question, and it is a different question from whether $36 fits this month."},{"type":"callout","label":"Educational Note","text":"A practical habit is to review recurring charges twice a year by scanning one or two months of bank and card statements for repeating amounts. Subscriptions that renew automatically are designed to continue without a decision; the review is what puts the decision back."},{"type":"callout","label":"Key Insight","text":"Evaluate recurring expenses by their annual cost. A small monthly amount can represent a significant yearly commitment."}]},{"n":4,"title":"Intentional Spending and Habitual Spending","blocks":[{"type":"p","text":"Two expenses of identical size can have very different meaning. An intentional expense is one you would choose again today, because it provides value you can name. A habitual expense continues mainly because it already exists."},{"type":"table","head":["Intentional","Habitual"],"rows":[["Ordering delivery because you chose convenience on a busy night","Ordering delivery every Friday without considering the cost"],["Keeping a subscription you use regularly","Keeping a subscription because canceling feels inconvenient"],["Paying more for a service whose quality matters to you","Paying for a plan you selected years ago and never reviewed"]]},{"type":"p","text":"The purpose of this distinction is not to eliminate enjoyment. It is to make sure that spending reflects a current decision instead of an old one."},{"type":"callout","label":"Key Insight","text":"A recurring expense is not necessarily a bad expense. The question is whether it is still intentional."}]},{"n":5,"title":"Needs, Wants, and Priorities","blocks":[{"type":"p","text":"Budget advice often splits spending into needs and wants, treating one as responsible and the other as indulgent. A more useful framework has three categories."},{"type":"p","text":"Needs Expenses required to maintain basic living and meet obligations: housing, utilities, food, transportation to work, insurance, and required debt payments."},{"type":"p","text":"Wants Expenses that improve convenience, comfort, or enjoyment but are not essential."},{"type":"p","text":"Priorities Expenses that are not strictly necessary this month but are important to your goals: saving for education or professional development, building an emergency fund, paying down debt faster than required, or setting money aside for a planned purchase."},{"type":"p","text":"The third category is what keeps a budget realistic. Treating every non-essential expense as a want tends to produce budgets that are abandoned, because they leave no room for anything a person actually cares about."},{"type":"callout","label":"Key Insight","text":"A budget that has no place for your priorities is a budget you will stop using."}]},{"n":6,"title":"Building a Monthly Budget","blocks":[{"type":"p","text":"A workable budget can be built in six steps."},{"type":"p","text":"Use the amount that actually reaches your account after taxes and deductions. If your income varies, use a conservative recent average.","lead":"Step 1: Identify monthly take-home income"},{"type":"p","text":"Rent, insurance, minimum debt payments, subscriptions, and any other amount that repeats.","lead":"Step 2: List fixed recurring expenses"},{"type":"p","text":"Groceries, utilities, transportation. Two or three months of statements give a more accurate estimate than memory.","lead":"Step 3: Estimate variable expenses"},{"type":"p","text":"Assign an amount to it rather than leaving it as whatever remains, which is usually how discretionary spending expands.","lead":"Step 4: Identify discretionary spending"},{"type":"p","text":"Include emergency savings, priorities, and monthly allocations for irregular expenses, covered in Lesson 8.","lead":"Step 5: Allocate money toward savings and goals"},{"type":"p","text":"At the end of the month, compare what you planned with what happened. The gap is the information.","lead":"Step 6: Compare the plan with actual spending"},{"type":"table","head":["Category","Example monthly plan"],"rows":[["Take-home income","$3,600"],["Fixed expenses","$1,900"],["Variable expenses","$800"],["Discretionary","$350"],["Savings and priorities","$400"],["Irregular-expense allocations","$150"]]},{"type":"callout","label":"Educational Note","text":"The figures above are illustrative only. The point is the structure: every dollar of take-home income is assigned to a category, including the amounts that are saved or set aside."},{"type":"callout","label":"Key Insight","text":"A budget works when every category is assigned in advance, including discretionary spending and savings."}]},{"n":7,"title":"Irregular Expenses","blocks":[{"type":"p","text":"An irregular expense is one that does not occur monthly. It can be predictable but irregular, seasonal, or genuinely unexpected."},{"type":"p","text":"The most common budgeting mistake is treating the first two categories as if they were the third. An annual premium that arrives every February is not a surprise; it is a monthly expense that happens to be billed once a year."},{"type":"ul","items":["Predictable but irregular: annual insurance premiums, vehicle registration, professional memberships, tax preparation.","Seasonal: holiday spending, back-to-school costs, travel, higher utility bills in summer or winter.","Unexpected: car repairs, medical or dental costs, home repairs, replacing an appliance."]},{"type":"callout","label":"Key Insight","text":"Irregular does not always mean unpredictable. Expenses you know are coming belong in the plan, even when they are not monthly."}]},{"n":8,"title":"Sinking Funds and Expense Planning","blocks":[{"type":"p","text":"A sinking fund is money set aside gradually for a known future expense. Instead of paying $1,200 in a single month, you set aside $100 each month and pay the expense from what has already accumulated. The calculation is the expected annual cost divided by twelve."},{"type":"table","head":["Expense","Expected annual cost","Monthly allocation"],"rows":[["Car maintenance","$600","$50"],["Insurance premium","$1,200","$100"],["Holiday spending","$600","$50"],["Annual membership","$240","$20"],["Total","$2,640","$220"]]},{"type":"p","text":"Two practical notes. First, keep this money separate from everyday spending, in a distinct account or a clearly labeled portion of one, so that it is not spent by accident. Second, sinking funds are not the same as an emergency fund: sinking funds are for expenses you expect, while an emergency fund covers what you cannot predict."},{"type":"callout","label":"Key Insight","text":"Dividing a known annual expense by twelve converts a financial shock into an ordinary monthly line."}]},{"n":9,"title":"Reviewing and Adjusting Your Budget","blocks":[{"type":"p","text":"A budget is not a document you complete once. Its value comes from the monthly comparison between what you planned and what you actually spent."},{"type":"table","head":["Category","Planned","Actual"],"rows":[["Groceries","$400","$465"],["Dining and delivery","$150","$240"],["Transportation","$220","$195"],["Subscriptions","$60","$84"],["Then ask five questions:","",""]]},{"type":"ul","items":["Where did I spend more than expected, and why?","Which of those expenses were intentional?","Which were habitual?","Which recurring expenses no longer provide enough value?","Which irregular expenses should I start setting money aside for?"]},{"type":"callout","label":"Key Insight","text":"A useful budget is one you review and adjust, not one you follow perfectly."}]},{"n":10,"title":"Common Budgeting Misunderstandings","blocks":[{"type":"p","text":"The table below contrasts common beliefs about budgeting with a more accurate understanding."},{"type":"p","text":"Budgeting means eliminating discretionary spending. A budget helps you decide intentionally how much discretionary spending fits your income and priorities.","lead":"Common Misunderstanding More Accurate Understanding"},{"type":"table","head":["Common Misunderstanding","More Accurate Understanding"],"rows":[["Small expenses do not matter.","Small recurring expenses can become significant when measured annually."],["Irregular expenses cannot be planned for.","Many irregular expenses are predictable even though they do not occur monthly."],["A budget should never change.","A budget should be reviewed and adjusted as circumstances change."],["Every recurring expense is necessary.","Recurring expenses should be reviewed periodically to determine whether they still provide value."],["Spending less is always the goal.","The goal is to align spending with income and priorities."],["If I have money left at the end of the month, my budget worked.","A budget should also account for savings, goals, and upcoming irregular expenses."]]},{"type":"callout","label":"Key Insight","text":"Most budgeting failures come from plans that ignore irregular expenses or leave no room for priorities. Both are fixable in the plan itself."}]}],"quiz":[{"prompt":"What is the primary purpose of a budget?","options":[{"text":"To eliminate discretionary spending","correct":false},{"text":"To decide where money should go before it is spent","correct":true},{"text":"To track expenses only after the month ends","correct":false},{"text":"To increase your credit limit","correct":false}],"feedback":"A budget is a decision-making tool that assigns income to categories in advance."},{"prompt":"Which of the following best describes a fixed expense?","options":[{"text":"An expense that changes with use each month","correct":false},{"text":"An expense that stays approximately the same from month to month","correct":true},{"text":"Any expense that is necessary","correct":false},{"text":"An expense that occurs only once a year","correct":false}],"feedback":"Fixed expenses repeat at approximately the same amount, such as rent or an insurance premium."},{"prompt":"Which of the following is a variable expense?","options":[{"text":"Rent","correct":false},{"text":"Groceries","correct":true},{"text":"A minimum debt payment","correct":false},{"text":"An annual membership billed once a year","correct":false}],"feedback":"Variable expenses change from month to month based on use, season, or choice."},{"prompt":"What is a recurring expense?","options":[{"text":"Any expense over $100","correct":false},{"text":"A cost that repeats on a schedule, such as monthly or annually","correct":true},{"text":"An expense that occurs only once","correct":false},{"text":"An expense charged by a credit card issuer","correct":false}],"feedback":"Recurring expenses repeat on a schedule and include subscriptions, memberships, and premiums."},{"prompt":"Why is it useful to evaluate recurring expenses by their annual cost?","options":[{"text":"Because annual costs are always lower","correct":false},{"text":"Because the monthly amount can understate the size of the yearly commitment","correct":true},{"text":"Because most subscriptions are billed annually","correct":false},{"text":"Because credit bureaus report annual spending","correct":false}],"feedback":"A $25 monthly subscription represents $300 per year. The annual view shows the real commitment."},{"prompt":"What distinguishes an intentional expense from a habitual one?","options":[{"text":"The amount of the expense","correct":false},{"text":"Whether you would choose the expense again today","correct":true},{"text":"Whether it is paid by card or in cash","correct":false},{"text":"Whether it is fixed or variable","correct":false}],"feedback":"An intentional expense reflects a current decision; a habitual expense continues mainly because it already exists."},{"prompt":"What is a discretionary expense?","options":[{"text":"An expense required to meet basic living needs","correct":false},{"text":"Spending that improves comfort or enjoyment but is not required","correct":true},{"text":"Any expense paid automatically","correct":false},{"text":"A payment required by a lender","correct":false}],"feedback":"Discretionary spending is not essential; the budget assigns it an amount deliberately."},{"prompt":"Why can small recurring expenses become significant?","options":[{"text":"Because they increase your credit utilization","correct":false},{"text":"Because they repeat, and the annual total can be substantial","correct":true},{"text":"Because they are always billed at the same time","correct":false},{"text":"Because they are reported to credit bureaus","correct":false}],"feedback":"Repetition is what makes small amounts significant: $36 per month is $432 per year."},{"prompt":"What is an irregular expense?","options":[{"text":"An expense that never repeats","correct":false},{"text":"A cost that does not occur monthly, such as an annual premium or car maintenance","correct":true},{"text":"Any expense you did not plan for","correct":false},{"text":"An expense paid with a credit card","correct":false}],"feedback":"Irregular expenses do not occur monthly. Many of them are still predictable."},{"prompt":"Why can predictable irregular expenses be included in a budget?","options":[{"text":"Because they are usually small","correct":false},{"text":"Because you generally know they are coming and can estimate their cost","correct":true},{"text":"Because lenders require it","correct":false},{"text":"Because they are billed monthly","correct":false}],"feedback":"An expense that arrives every year is not a surprise; it can be planned for in advance."},{"prompt":"What is a sinking fund?","options":[{"text":"A savings account for emergencies only","correct":false},{"text":"Money set aside gradually for a known future expense","correct":true},{"text":"A type of loan used to cover irregular costs","correct":false},{"text":"A credit card feature that delays payments","correct":false}],"feedback":"A sinking fund accumulates money for an expense you expect, so that it does not arrive as a shock."},{"prompt":"If an annual expense is $1,200, how much would you set aside each month?","options":[{"text":"$50","correct":false},{"text":"$100","correct":true},{"text":"$120","correct":false},{"text":"$200","correct":false}],"feedback":"$1,200 divided by 12 equals $100 per month."},{"prompt":"How does a sinking fund differ from an emergency fund?","options":[{"text":"A sinking fund is for expenses you expect; an emergency fund is for what you cannot predict","correct":true},{"text":"A sinking fund is required by lenders","correct":false},{"text":"An emergency fund can only be used for medical costs","correct":false},{"text":"There is no difference between them","correct":false}],"feedback":"Sinking funds are planned; emergency funds cover the unplanned."},{"prompt":"Why should a budget be reviewed regularly?","options":[{"text":"Because lenders require monthly reports","correct":false},{"text":"Because comparing the plan with actual spending shows what needs to be adjusted","correct":true},{"text":"Because budgets expire after 30 days","correct":false},{"text":"Because credit scores depend on it","correct":false}],"feedback":"The comparison between planned and actual spending is what makes a budget useful over time."},{"prompt":"Which approach best describes effective budgeting?","options":[{"text":"Spending as little as possible in every category","correct":false},{"text":"Assigning income to categories in advance, including savings and irregular expenses, and reviewing the results","correct":true},{"text":"Tracking expenses only when money runs short","correct":false},{"text":"Keeping all spending on one credit card","correct":false}],"feedback":"Effective budgeting aligns spending with income and priorities and is reviewed and adjusted over time."}],"quizIntro":"Answer the following 15 questions to test your understanding of budgeting and recurring expenses. Select the best answer for each question.","summary":[{"type":"p","text":"In this module, you learned:"},{"type":"ul","items":["What a budget is and the six categories a practical budget accounts for;","The difference between fixed and variable expenses, and why fixed does not mean necessary;","How to identify recurring expenses and evaluate them by their annual cost;","How to distinguish intentional spending from habitual spending;","How needs, wants, and financial priorities differ, and why priorities keep a budget realistic;","A six-step method for building a monthly budget;","The difference between predictable irregular expenses, seasonal costs, and genuinely unexpected ones;","How sinking funds convert annual expenses into monthly allocations, and how they differ from an emergency fund;","How to compare planned and actual spending and adjust the plan;","Common budgeting misunderstandings and a more accurate perspective on each."]}],"reflection":["Which expense category surprised you most when you thought about its total monthly or annual cost?","Which recurring expense in your budget provides the most value to you? Which provides the least?","Which irregular expense would create the most financial stress if you had to pay it tomorrow?"],"actionTask":{"title":"Build Your One-Month Spending Map","steps":["List your recurring expenses. Write down every recurring monthly, quarterly, or annual expense you currently have, and note the annual cost of each one.","Identify one predictable irregular expense. Estimate its annual cost and divide that amount by twelve to find the monthly allocation it would require.","Choose one spending adjustment for the next 30 days. This could mean canceling an unused subscription, reducing a habitual expense, starting a sinking fund, setting a spending limit for one discretionary category, or reallocating money toward a financial priority."]},"disclaimer":"This module is educational and intended to help you understand how budgeting and recurring expenses work. It does not constitute legal, financial, investment, or credit repair advice. For personalized guidance on your specific financial situation, consult a qualified financial professional.","practiceIntro":"To close this module, take a few minutes to reflect on what you have learned before completing the action task. There are no right or wrong answers. The goal is to connect the content to your own financial situation.","taskPurpose":"Apply what you learned in this module to your own financial situation through one concrete, low-stakes action this week.","taskInstruction":"Complete the following three steps before the end of the week:"}];
+
+const CATALOG = [
+  { n: 1, icon: "🏦" },
+  { n: 2, icon: "💳" },
+  { n: 3, icon: "📊" },
+  {
+    n: 4, icon: "📋", title: "Understanding Fees and Interest",
+    subtitle: "Late fees, overdraft charges, unnecessary subscription costs, and the real price of carrying a balance month to month.",
+    comingSoon: true,
+  },
+  {
+    n: 5, icon: "🎯", title: "Debt Education Strategies",
+    subtitle: "Practical frameworks for evaluating debt decisions, comparing repayment scenarios, and understanding the real cost of high-interest borrowing.",
+    comingSoon: true,
+  },
+  {
+    n: 6, icon: "💰", title: "Savings Habits and Goals",
+    subtitle: "Building consistent savings habits, emergency fund strategies, and how to automate financial discipline into your daily routine.",
+    comingSoon: true,
+  },
+];
+
+const MODULES = CATALOG.map((c) => {
+  const src = CONTENT.find((m) => m.n === c.n);
+  return src ? { ...src, ...c, ready: true } : { ...c, ready: false, lessons: [], quiz: [] };
+});
+
+const PASS_MARK = 0.7;
+const TOTAL_LESSONS = MODULES.reduce((a, m) => a + (m.lessons ? m.lessons.length : 0), 0);
+
+/* ------------------------------------------------------------------ *
+ *  Storage helpers
+ * ------------------------------------------------------------------ */
+const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 60);
+const today = () => new Date().toISOString().slice(0, 10);
+
+async function storeGet(key) {
+  try {
+    const r = await LOCAL.get(key);
+    return r ? JSON.parse(r.value) : null;
+  } catch (e) {
+    return null;
+  }
+}
+async function storeSet(key, value) {
+  try {
+    await LOCAL.set(key, JSON.stringify(value));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+const emptyModuleProgress = () => ({
+  lessons: [],
+  quiz: { best: null, attempts: 0, passed: false, missed: [] },
+  task: { steps: [false, false, false], reflection: ["", "", ""], done: false },
+});
+
+const emptyProgress = () => ({
+  modules: {},
+  streak: { days: 1, last: today() },
+  unlockAll: false,
+});
+
+function moduleProgress(progress, n) {
+  return progress.modules[n] || emptyModuleProgress();
+}
+
+function moduleState(progress, mod) {
+  const p = moduleProgress(progress, mod.n);
+  const lessonsDone = p.lessons.length;
+  const total = mod.lessons.length || 1;
+  const complete = mod.ready && lessonsDone >= total && p.quiz.passed && p.task.done;
+  const started = lessonsDone > 0 || p.quiz.attempts > 0;
+  return { ...p, lessonsDone, total, complete, started, percent: mod.ready ? Math.round((lessonsDone / total) * 100) : 0 };
+}
+
+function isUnlocked(progress, mod) {
+  if (!mod.ready) return false;
+  if (mod.n === 1 || progress.unlockAll) return true;
+  const prev = MODULES.find((m) => m.n === mod.n - 1);
+  if (!prev || !prev.ready) return false;
+  return moduleState(progress, prev).complete;
+}
+
+function bumpStreak(streak) {
+  const t = today();
+  if (streak.last === t) return streak;
+  const y = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  return { days: streak.last === y ? streak.days + 1 : 1, last: t };
+}
+
+/* ------------------------------------------------------------------ *
+ *  Styles
+ * ------------------------------------------------------------------ */
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap');
+
+.fw {
+  --ink: #0F2740;
+  --ink-soft: #344C60;
+  --muted: #6B808F;
+  --paper: #FFFFFF;
+  --bg: #F3F6F5;
+  --line: #DCE6E3;
+  --green: #11614A;
+  --green-dark: #0C4A38;
+  --green-tint: #E6F1EC;
+  --amber: #C8871B;
+  --amber-tint: #FBF1DE;
+  --red: #A3372C;
+  --red-tint: #F8EBE9;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.fw *, .fw *::before, .fw *::after { box-sizing: border-box; }
+.fw h1, .fw h2, .fw h3, .fw h4 { font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+.fw p { margin: 0; }
+.fw button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+.fw button:focus-visible, .fw input:focus-visible, .fw textarea:focus-visible, .fw a:focus-visible {
+  outline: 2px solid var(--green); outline-offset: 2px;
+}
+
+/* ---- shell ---- */
+.fw-shell { display: flex; min-height: 100vh; }
+.fw-side {
+  width: 244px; flex: none; background: var(--ink); color: #E8EFF2;
+  padding: 22px 16px; display: flex; flex-direction: column; gap: 26px; position: sticky; top: 0; height: 100vh;
+}
+.fw-brand { display: flex; align-items: baseline; gap: 7px; font-family: 'Source Serif 4', Georgia, serif; font-size: 19px; font-weight: 600; color: #fff; }
+.fw-brand span { font-family: Inter, sans-serif; font-size: 10px; letter-spacing: 0.14em; color: #8BA6AE; font-weight: 500; }
+.fw-nav { display: flex; flex-direction: column; gap: 2px; }
+.fw-nav button {
+  display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: 8px;
+  font-size: 14px; color: #B9CBD1; text-align: left; width: 100%;
+}
+.fw-nav button:hover { background: rgba(255,255,255,.07); color: #fff; }
+.fw-nav button.on { background: rgba(255,255,255,.12); color: #fff; font-weight: 500; }
+.fw-side-foot { margin-top: auto; border-top: 1px solid rgba(255,255,255,.14); padding-top: 14px; font-size: 13px; }
+.fw-side-foot .who { color: #fff; font-weight: 500; }
+.fw-side-foot .mail { color: #8BA6AE; font-size: 12px; margin-top: 2px; word-break: break-all; }
+.fw-side-foot button { color: #B9CBD1; font-size: 13px; display: flex; align-items: center; gap: 7px; margin-top: 12px; }
+.fw-side-foot button:hover { color: #fff; }
+.fw-main { flex: 1; min-width: 0; }
+.fw-page { max-width: 940px; margin: 0 auto; padding: 34px 28px 90px; }
+.fw-topbar { display: none; }
+
+/* ---- primitives ---- */
+.fw-card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+.fw-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--green); color: #fff; padding: 11px 18px; border-radius: 9px;
+  font-size: 14px; font-weight: 500;
+}
+.fw-btn:hover { background: var(--green-dark); }
+.fw-btn:disabled { background: #B7C6C1; cursor: not-allowed; }
+.fw-btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.fw-btn.ghost:hover { background: #EEF3F2; }
+.fw-btn.quiet { background: transparent; color: var(--muted); padding: 9px 4px; }
+.fw-btn.quiet:hover { color: var(--ink); }
+.fw-eyebrow { font-size: 12px; color: var(--muted); font-weight: 500; }
+.fw-bar { height: 6px; border-radius: 99px; background: #E4EBE9; overflow: hidden; }
+.fw-bar i { display: block; height: 100%; background: var(--green); border-radius: 99px; transition: width .35s ease; }
+.fw-tag { font-size: 11.5px; font-weight: 500; padding: 3px 9px; border-radius: 99px; display: inline-flex; align-items: center; gap: 5px; }
+.fw-tag.done { background: var(--green-tint); color: var(--green-dark); }
+.fw-tag.now { background: var(--amber-tint); color: var(--amber); }
+.fw-tag.soon { background: #EDF1F0; color: var(--muted); }
+
+/* ---- sign in ---- */
+.fw-signin { display: grid; grid-template-columns: 1.05fr .95fr; min-height: 100vh; }
+.fw-signin-left { background: var(--ink); color: #DCE7EB; padding: 54px 48px; display: flex; flex-direction: column; gap: 28px; }
+.fw-signin-left h1 { color: #fff; font-size: 38px; line-height: 1.12; max-width: 12ch; }
+.fw-signin-left .lead { font-size: 15px; line-height: 1.6; max-width: 44ch; color: #AFC4CB; }
+.fw-mods { display: flex; flex-direction: column; gap: 9px; margin-top: auto; }
+.fw-mods div { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #C6D6DB; }
+.fw-mods span { width: 22px; text-align: center; }
+.fw-signin-right { display: flex; align-items: center; justify-content: center; padding: 40px 32px; background: var(--paper); }
+.fw-form { width: 100%; max-width: 358px; display: flex; flex-direction: column; gap: 15px; }
+.fw-form h2 { font-size: 25px; }
+.fw-tabs { display: flex; gap: 4px; background: #EEF3F2; padding: 4px; border-radius: 10px; margin-bottom: 4px; }
+.fw-tabs button { flex: 1; padding: 9px 10px; border-radius: 7px; font-size: 13.5px; color: var(--muted); font-weight: 500; }
+.fw-tabs button.on { background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgba(15,39,64,.08); }
+.fw-field label { display: block; font-size: 12.5px; font-weight: 500; color: var(--ink-soft); margin-bottom: 5px; }
+.fw-field input {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px;
+  font-size: 14.5px; font-family: inherit; color: var(--ink); background: #FCFDFD;
+}
+.fw-form .note { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.fw-form .err { font-size: 12.5px; color: var(--red); }
+
+/* ---- dashboard ---- */
+.fw-hello { font-size: 29px; margin-bottom: 4px; }
+.fw-sub { color: var(--muted); font-size: 14.5px; }
+.fw-continue { padding: 22px; display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin: 24px 0 8px; }
+.fw-continue h2 { font-size: 21px; margin: 4px 0 6px; }
+.fw-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 30px; }
+.fw-stat { padding: 15px 16px; }
+.fw-stat b { font-family: 'Source Serif 4', Georgia, serif; font-size: 25px; font-weight: 600; display: block; }
+.fw-stat small { color: var(--muted); font-size: 12.5px; }
+.fw-path { position: relative; padding-left: 30px; }
+.fw-path::before { content: ""; position: absolute; left: 11px; top: 12px; bottom: 12px; width: 2px; background: var(--line); }
+.fw-step { position: relative; margin-bottom: 12px; }
+.fw-dot {
+  position: absolute; left: -30px; top: 20px; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--paper); border: 2px solid var(--line); display: flex; align-items: center; justify-content: center;
+  font-size: 11.5px; font-weight: 600; color: var(--muted);
+}
+.fw-dot.done { background: var(--green); border-color: var(--green); color: #fff; }
+.fw-dot.open { border-color: var(--green); color: var(--green); }
+.fw-modcard { padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; width: 100%; text-align: left; }
+.fw-modcard.locked { opacity: .62; }
+.fw-modcard:not(.locked):hover { border-color: #B9CFC7; }
+.fw-modcard .ico { font-size: 21px; line-height: 1; margin-top: 2px; }
+.fw-modcard h3 { font-size: 17px; }
+.fw-modcard p { font-size: 13.5px; color: var(--muted); line-height: 1.55; margin-top: 4px; }
+.fw-modmeta { display: flex; align-items: center; gap: 12px; margin-top: 11px; font-size: 12.5px; color: var(--muted); }
+.fw-modmeta .fw-bar { width: 120px; }
+
+/* ---- module reader ---- */
+.fw-reader { display: grid; grid-template-columns: 232px 1fr; gap: 30px; align-items: start; }
+.fw-rail { position: sticky; top: 24px; padding: 8px; }
+.fw-rail button {
+  display: flex; gap: 9px; align-items: flex-start; width: 100%; text-align: left;
+  padding: 8px 9px; border-radius: 7px; font-size: 13px; color: var(--ink-soft); line-height: 1.35;
+}
+.fw-rail button:hover { background: #F1F5F4; }
+.fw-rail button.on { background: var(--green-tint); color: var(--green-dark); font-weight: 500; }
+.fw-rail button:disabled { color: #A9B8BF; cursor: not-allowed; }
+.fw-rail .num { flex: none; width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 10.5px; margin-top: 1px; }
+.fw-rail .num.done { background: var(--green); border-color: var(--green); color: #fff; }
+.fw-rail hr { border: none; border-top: 1px solid var(--line); margin: 8px 4px; }
+.fw-doc { padding: 30px 34px 26px; }
+.fw-doc h1 { font-size: 27px; line-height: 1.22; }
+.fw-body { font-family: 'Source Serif 4', Georgia, serif; font-size: 16.5px; line-height: 1.68; color: #1D3446; max-width: 68ch; }
+.fw-body p { margin: 15px 0; }
+.fw-body p .lead { font-weight: 700; }
+.fw-body ul, .fw-body ol { margin: 15px 0; padding-left: 22px; }
+.fw-body li { margin: 8px 0; }
+.fw-callout { border-left: 3px solid var(--green); background: var(--green-tint); padding: 13px 16px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+.fw-callout .lbl { font-family: Inter, sans-serif; font-size: 11.5px; font-weight: 600; color: var(--green-dark); letter-spacing: .02em; margin-bottom: 4px; }
+.fw-callout p { margin: 0; font-size: 15.5px; }
+.fw-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-family: Inter, sans-serif; font-size: 13.8px; }
+.fw-table th { text-align: left; font-weight: 600; color: var(--ink); padding: 9px 12px; border-bottom: 2px solid var(--line); }
+.fw-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--ink-soft); line-height: 1.5; vertical-align: top; }
+.fw-table tr:last-child td { border-bottom: none; }
+.fw-docfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--line); margin-top: 26px; padding-top: 18px; }
+
+/* ---- quiz ---- */
+.fw-quiz { max-width: 680px; margin: 0 auto; padding: 28px 30px 26px; }
+.fw-quiz h2 { font-size: 21px; line-height: 1.35; margin: 14px 0 18px; }
+.fw-opt {
+  display: flex; gap: 11px; width: 100%; text-align: left; padding: 13px 15px; border: 1px solid var(--line);
+  border-radius: 9px; margin-bottom: 9px; font-size: 14.5px; line-height: 1.5; align-items: flex-start; background: #FCFDFD;
+}
+.fw-opt:hover:not(:disabled) { border-color: #A8C3B9; background: #F7FAF9; }
+.fw-opt .mark { flex: none; width: 19px; height: 19px; border-radius: 50%; border: 1.5px solid #BCCBD2; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+.fw-opt.sel { border-color: var(--green); background: var(--green-tint); }
+.fw-opt.sel .mark { border-color: var(--green); background: var(--green); color: #fff; }
+.fw-opt.right { border-color: var(--green); background: var(--green-tint); }
+.fw-opt.wrong { border-color: var(--red); background: var(--red-tint); }
+.fw-fb { border-radius: 9px; padding: 14px 16px; margin-top: 16px; font-size: 14.2px; line-height: 1.6; }
+.fw-fb.ok { background: var(--green-tint); color: #123B2E; }
+.fw-fb.no { background: var(--red-tint); color: #5E2019; }
+.fw-fb b { display: block; margin-bottom: 3px; font-size: 13px; }
+.fw-score { font-family: 'Source Serif 4', Georgia, serif; font-size: 52px; font-weight: 600; line-height: 1; }
+.fw-review { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 18px; text-align: left; }
+.fw-review li { font-size: 13.8px; line-height: 1.55; color: var(--ink-soft); margin-bottom: 12px; }
+.fw-review li b { color: var(--ink); }
+
+/* ---- action task ---- */
+.fw-task { max-width: 720px; margin: 0 auto; padding: 28px 30px; }
+.fw-check { display: flex; gap: 12px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--line); width: 100%; text-align: left; font-size: 14.5px; line-height: 1.55; }
+.fw-check .box { flex: none; width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid #BCCBD2; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.fw-check .box.on { background: var(--green); border-color: var(--green); color: #fff; }
+.fw-refl textarea {
+  width: 100%; min-height: 78px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 8px;
+  font-family: 'Source Serif 4', Georgia, serif; font-size: 15px; line-height: 1.55; color: var(--ink); background: #FCFDFD; resize: vertical;
+}
+.fw-refl p { font-size: 14px; color: var(--ink-soft); margin-bottom: 7px; line-height: 1.5; }
+.fw-disclaimer { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 900px) {
+  .fw-shell { display: block; }
+  .fw-side { display: none; }
+  .fw-topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--ink); color: #fff; padding: 13px 16px; position: sticky; top: 0; z-index: 20;
+  }
+  .fw-topbar .fw-nav { flex-direction: row; }
+  .fw-topbar .fw-nav button { padding: 7px 10px; font-size: 13px; }
+  .fw-page { padding: 22px 16px 70px; }
+  .fw-signin { grid-template-columns: 1fr; }
+  .fw-signin-left { padding: 34px 24px; gap: 20px; }
+  .fw-signin-left h1 { font-size: 30px; }
+  .fw-mods { display: none; }
+  .fw-signin-right { padding: 28px 24px 48px; }
+  .fw-stats { grid-template-columns: repeat(2, 1fr); }
+  .fw-reader { grid-template-columns: 1fr; gap: 16px; }
+  .fw-rail { position: static; }
+  .fw-doc { padding: 22px 18px; }
+  .fw-body { font-size: 16px; }
+  .fw-quiz, .fw-task { padding: 22px 18px; }
+}
+`;
+
+/* ------------------------------------------------------------------ *
+ *  Block renderer
+ * ------------------------------------------------------------------ */
+function Blocks({ blocks }) {
+  return (
+    <div className="fw-body">
+      {blocks.map((b, i) => {
+        if (b.type === "p")
+          return (
+            <p key={i}>
+              {b.lead ? <span className="lead">{b.lead} </span> : null}
+              {b.text}
+            </p>
+          );
+        if (b.type === "ul")
+          return <ul key={i}>{b.items.map((it, j) => <li key={j}>{it}</li>)}</ul>;
+        if (b.type === "ol")
+          return <ol key={i}>{b.items.map((it, j) => <li key={j}>{it}</li>)}</ol>;
+        if (b.type === "callout")
+          return (
+            <div className="fw-callout" key={i}>
+              <div className="lbl">{b.label}</div>
+              <p>{b.text}</p>
+            </div>
+          );
+        if (b.type === "table")
+          return (
+            <table className="fw-table" key={i}>
+              <thead>
+                <tr>{b.head.map((h, j) => <th key={j}>{h}</th>)}</tr>
+              </thead>
+              <tbody>
+                {b.rows.map((r, j) => (
+                  <tr key={j}>{r.map((c, k) => <td key={k}>{c}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          );
+        return null;
+      })}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Sign in
+ * ------------------------------------------------------------------ */
+function Entry({ onEnter }) {
+  const [mode, setMode] = useState("register");
+  const [form, setForm] = useState({ name: "", email: "", city: "", pass: "" });
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const validEmail = (v) => /^\S+@\S+\.\S+$/.test(v.trim());
+
+  const register = async () => {
+    if (!form.name.trim()) return setErr("Enter your full name.");
+    if (!validEmail(form.email)) return setErr("Enter a valid email address.");
+    if (!form.city.trim()) return setErr("Enter the city where you live.");
+    if (form.pass.length < 4) return setErr("Create a password with at least 4 characters.");
+    setErr(""); setBusy(true);
+    const email = form.email.trim().toLowerCase();
+    const existing = await storeGet(`finwise:account:${slug(email)}`);
+    if (existing) {
+      setBusy(false);
+      setMode("login");
+      return setErr("An account with this email already exists. Sign in below.");
+    }
+    const user = { name: form.name.trim(), email, city: form.city.trim() };
+    await storeSet(`finwise:account:${slug(email)}`, { ...user, pass: form.pass });
+    setBusy(false);
+    onEnter(user);
+  };
+
+  const login = async () => {
+    if (!validEmail(form.email)) return setErr("Enter a valid email address.");
+    setErr(""); setBusy(true);
+    const acc = await storeGet(`finwise:account:${slug(form.email.trim().toLowerCase())}`);
+    setBusy(false);
+    if (!acc) return setErr("No member account found for this email on this device. Create one above.");
+    if (acc.pass !== form.pass) return setErr("That password does not match this account.");
+    onEnter({ name: acc.name, email: acc.email, city: acc.city });
+  };
+
+  const submit = mode === "register" ? register : login;
+  const onKey = (e) => { if (e.key === "Enter") submit(); };
+
+  return (
+    <div className="fw">
+      <style>{CSS}</style>
+      <div className="fw-signin">
+        <div className="fw-signin-left">
+          <div className="fw-brand">FinWise Academy <span>LEARNING PLATFORM</span></div>
+          <div>
+            <h1>Learn it. Then do it.</h1>
+            <p className="lead" style={{ marginTop: 14 }}>
+              Six modules that connect financial concepts to the decisions you are already
+              facing. Each one ends with a quiz and an action task you can complete this week.
+            </p>
+          </div>
+          <div className="fw-mods">
+            {MODULES.map((m) => (
+              <div key={m.n}>
+                <span>{m.icon}</span>
+                {m.title}
+                {m.comingSoon ? <em style={{ color: "#7E949B", fontStyle: "normal", fontSize: 12 }}>· in production</em> : null}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="fw-signin-right">
+          <div className="fw-form">
+            <div className="fw-tabs">
+              <button className={mode === "register" ? "on" : ""} onClick={() => { setMode("register"); setErr(""); }}>
+                Create account
+              </button>
+              <button className={mode === "login" ? "on" : ""} onClick={() => { setMode("login"); setErr(""); }}>
+                Member sign in
+              </button>
+            </div>
+
+            {mode === "register" ? (
+              <>
+                <h2>Create your account</h2>
+                <p className="note">Three details and you are on your learning path.</p>
+                <div className="fw-field">
+                  <label htmlFor="fw-name">Full name</label>
+                  <input id="fw-name" value={form.name} onChange={set("name")} onKeyDown={onKey} placeholder="Sarah Mitchell" />
+                </div>
+                <div className="fw-field">
+                  <label htmlFor="fw-email">Email</label>
+                  <input id="fw-email" type="email" value={form.email} onChange={set("email")} onKeyDown={onKey} placeholder="you@email.com" />
+                </div>
+                <div className="fw-field">
+                  <label htmlFor="fw-city">City</label>
+                  <input id="fw-city" value={form.city} onChange={set("city")} onKeyDown={onKey} placeholder="Boca Raton, FL" />
+                </div>
+                <div className="fw-field">
+                  <label htmlFor="fw-pass">Create a password</label>
+                  <input id="fw-pass" type="password" value={form.pass} onChange={set("pass")} onKeyDown={onKey} placeholder="••••••••" />
+                </div>
+              </>
+            ) : (
+              <>
+                <h2>Welcome back</h2>
+                <p className="note">Sign in to pick up where you left off.</p>
+                <div className="fw-field">
+                  <label htmlFor="fw-email2">Email</label>
+                  <input id="fw-email2" type="email" value={form.email} onChange={set("email")} onKeyDown={onKey} placeholder="you@email.com" />
+                </div>
+                <div className="fw-field">
+                  <label htmlFor="fw-pass2">Password</label>
+                  <input id="fw-pass2" type="password" value={form.pass} onChange={set("pass")} onKeyDown={onKey} placeholder="••••••••" />
+                </div>
+              </>
+            )}
+
+            {err ? <p className="err">{err}</p> : null}
+            <button className="fw-btn" onClick={submit} disabled={busy}>
+              {mode === "register" ? "Create account and start" : "Sign in"}
+            </button>
+            <p className="note">
+              {mode === "register"
+                ? "Already a member? Use Member sign in above."
+                : "New here? Create an account above."}
+              {" "}Your account and progress are saved on this device.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Dashboard
+ * ------------------------------------------------------------------ */
+function Dashboard({ user, progress, go }) {
+  const states = MODULES.map((m) => ({ mod: m, st: moduleState(progress, m), open: isUnlocked(progress, m) }));
+  const lessonsDone = states.reduce((a, s) => a + s.st.lessonsDone, 0);
+  const tasksDone = states.filter((s) => s.st.task.done).length;
+  const scored = states.filter((s) => s.st.quiz.best !== null);
+  const avg = scored.length
+    ? Math.round(scored.reduce((a, s) => a + (s.st.quiz.best / 15) * 100, 0) / scored.length)
+    : null;
+
+  const current = states.find((s) => s.open && !s.st.complete) || states.find((s) => s.open);
+  const nextLesson = current
+    ? (current.mod.lessons || []).find((l) => !current.st.lessons.includes(l.n))
+    : null;
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const first = user.name.split(" ")[0];
+
+  const cta = () => {
+    if (!current) return null;
+    if (nextLesson) return { label: `Continue: Lesson ${nextLesson.n}`, run: () => go({ name: "module", id: current.mod.n, lesson: nextLesson.n }) };
+    if (!current.st.quiz.passed) return { label: "Take the module quiz", run: () => go({ name: "quiz", id: current.mod.n }) };
+    if (!current.st.task.done) return { label: "Finish the action task", run: () => go({ name: "task", id: current.mod.n }) };
+    return { label: "Review the module", run: () => go({ name: "module", id: current.mod.n, lesson: 1 }) };
+  };
+  const action = cta();
+
+  return (
+    <div className="fw-page">
+      <h1 className="fw-hello">{greeting}, {first}</h1>
+      <p className="fw-sub">
+        {lessonsDone === 0
+          ? "Your path starts with how the U.S. credit system works."
+          : `${lessonsDone} of ${TOTAL_LESSONS} published lessons completed.`}
+      </p>
+
+      {current && action ? (
+        <div className="fw-card fw-continue">
+          <div style={{ minWidth: 240 }}>
+            <div className="fw-eyebrow">{current.st.complete ? "Completed" : "Continue where you left off"}</div>
+            <h2>{current.mod.icon} {current.mod.title}</h2>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div className="fw-bar" style={{ width: 180 }}><i style={{ width: `${current.st.percent}%` }} /></div>
+              <span style={{ fontSize: 12.5, color: "var(--muted)" }}>
+                {current.st.lessonsDone}/{current.st.total} lessons
+              </span>
+            </div>
+          </div>
+          <button className="fw-btn" onClick={action.run}>{action.label} <ChevronRight size={16} /></button>
+        </div>
+      ) : null}
+
+      <div className="fw-stats">
+        <div className="fw-card fw-stat"><b>{lessonsDone}</b><small>Lessons completed</small></div>
+        <div className="fw-card fw-stat"><b>{avg === null ? "—" : `${avg}%`}</b><small>Quiz average</small></div>
+        <div className="fw-card fw-stat"><b>{tasksDone}</b><small>Action tasks done</small></div>
+        <div className="fw-card fw-stat">
+          <b style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <Flame size={19} color="var(--amber)" />{progress.streak.days}
+          </b>
+          <small>Day streak</small>
+        </div>
+      </div>
+
+      <div className="fw-eyebrow" style={{ marginBottom: 12 }}>Your learning path</div>
+      <div className="fw-path">
+        {states.map(({ mod, st, open }) => (
+          <div className="fw-step" key={mod.n}>
+            <div className={`fw-dot ${st.complete ? "done" : open ? "open" : ""}`}>
+              {st.complete ? <Check size={13} /> : mod.n}
+            </div>
+            <button
+              className={`fw-card fw-modcard ${open ? "" : "locked"}`}
+              disabled={!open}
+              onClick={() => go({ name: "module", id: mod.n, lesson: 1 })}
+            >
+              <span className="ico">{mod.icon}</span>
+              <span style={{ flex: 1 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 9, flexWrap: "wrap" }}>
+                  <h3>{mod.title}</h3>
+                  {st.complete ? <span className="fw-tag done"><CheckCircle2 size={12} />Complete</span> : null}
+                  {!st.complete && open && st.started ? <span className="fw-tag now">In progress</span> : null}
+                  {mod.comingSoon ? <span className="fw-tag soon">In production</span> : null}
+                  {!open && !mod.comingSoon ? <span className="fw-tag soon"><Lock size={11} />Finish module {mod.n - 1} first</span> : null}
+                </span>
+                <p>{mod.subtitle}</p>
+                {mod.ready ? (
+                  <span className="fw-modmeta">
+                    <span className="fw-bar"><i style={{ width: `${st.percent}%` }} /></span>
+                    {st.lessonsDone}/{st.total} lessons
+                    {st.quiz.best !== null ? <span>· quiz {st.quiz.best}/15</span> : null}
+                  </span>
+                ) : null}
+              </span>
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Module reader
+ * ------------------------------------------------------------------ */
+function ModuleView({ mod, progress, setProgress, route, go }) {
+  const st = moduleState(progress, mod);
+  const lesson = mod.lessons.find((l) => l.n === route.lesson) || mod.lessons[0];
+  const topRef = useRef(null);
+
+  useEffect(() => {
+    if (topRef.current) topRef.current.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [route.lesson]);
+
+  const done = st.lessons.includes(lesson.n);
+
+  const completeAndNext = () => {
+    setProgress((p) => {
+      const mp = moduleProgress(p, mod.n);
+      const lessons = mp.lessons.includes(lesson.n) ? mp.lessons : [...mp.lessons, lesson.n];
+      return { ...p, modules: { ...p.modules, [mod.n]: { ...mp, lessons } } };
+    });
+    const next = mod.lessons.find((l) => l.n === lesson.n + 1);
+    if (next) go({ name: "module", id: mod.n, lesson: next.n });
+    else go({ name: "quiz", id: mod.n });
+  };
+
+  return (
+    <div className="fw-page" ref={topRef}>
+      <button className="fw-btn quiet" onClick={() => go({ name: "dashboard" })}>
+        <ChevronLeft size={15} /> Dashboard
+      </button>
+
+      <div style={{ margin: "8px 0 20px" }}>
+        <div className="fw-eyebrow">Module {mod.n} · {mod.meta}</div>
+        <h1 style={{ fontSize: 25, marginTop: 5 }}>{mod.icon} {mod.title}</h1>
+      </div>
+
+      <div className="fw-reader">
+        <nav className="fw-card fw-rail">
+          {mod.lessons.map((l) => (
+            <button
+              key={l.n}
+              className={l.n === lesson.n ? "on" : ""}
+              onClick={() => go({ name: "module", id: mod.n, lesson: l.n })}
+            >
+              <span className={`num ${st.lessons.includes(l.n) ? "done" : ""}`}>
+                {st.lessons.includes(l.n) ? <Check size={11} /> : l.n}
+              </span>
+              <span>{l.title}</span>
+            </button>
+          ))}
+          <hr />
+          <button onClick={() => go({ name: "quiz", id: mod.n })}>
+            <span className={`num ${st.quiz.passed ? "done" : ""}`}>
+              {st.quiz.passed ? <Check size={11} /> : <Trophy size={10} />}
+            </span>
+            <span>Module quiz · {mod.quiz.length} questions</span>
+          </button>
+          <button onClick={() => go({ name: "task", id: mod.n })}>
+            <span className={`num ${st.task.done ? "done" : ""}`}>
+              {st.task.done ? <Check size={11} /> : <Target size={10} />}
+            </span>
+            <span>Action task</span>
+          </button>
+        </nav>
+
+        <article className="fw-card fw-doc">
+          {lesson.n === 1 ? (
+            <div style={{ marginBottom: 22, paddingBottom: 18, borderBottom: "1px solid var(--line)" }}>
+              <div className="fw-eyebrow" style={{ marginBottom: 8 }}>Module overview</div>
+              <Blocks blocks={mod.overview} />
+            </div>
+          ) : null}
+
+          <div className="fw-eyebrow">Lesson {lesson.n} of {mod.lessons.length}</div>
+          <h1 style={{ margin: "6px 0 4px" }}>{lesson.title}</h1>
+          <Blocks blocks={lesson.blocks} />
+
+          <div className="fw-docfoot">
+            <button
+              className="fw-btn ghost"
+              disabled={lesson.n === 1}
+              onClick={() => go({ name: "module", id: mod.n, lesson: lesson.n - 1 })}
+            >
+              <ChevronLeft size={15} /> Previous
+            </button>
+            <button className="fw-btn" onClick={completeAndNext}>
+              {done ? "Next" : "Mark complete"}
+              {lesson.n === mod.lessons.length ? " and start the quiz" : ""}
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </article>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Quiz
+ * ------------------------------------------------------------------ */
+function Quiz({ mod, progress, setProgress, go }) {
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [checked, setChecked] = useState(false);
+  const [answers, setAnswers] = useState([]);
+  const [finished, setFinished] = useState(false);
+
+  const q = mod.quiz[i];
+  const correctIndex = q ? q.options.findIndex((o) => o.correct) : -1;
+  const score = answers.filter(Boolean).length;
+  const passed = score / mod.quiz.length >= PASS_MARK;
+
+  const check = () => {
+    if (picked === null) return;
+    setChecked(true);
+    setAnswers((a) => {
+      const copy = [...a];
+      copy[i] = picked === correctIndex;
+      return copy;
+    });
+  };
+
+  const next = () => {
+    if (i + 1 < mod.quiz.length) {
+      setI(i + 1);
+      setPicked(null);
+      setChecked(false);
+    } else {
+      setFinished(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!finished) return;
+    const missed = mod.quiz.map((_, k) => k).filter((k) => !answers[k]);
+    setProgress((p) => {
+      const mp = moduleProgress(p, mod.n);
+      const best = mp.quiz.best === null ? score : Math.max(mp.quiz.best, score);
+      return {
+        ...p,
+        modules: {
+          ...p.modules,
+          [mod.n]: {
+            ...mp,
+            quiz: { best, attempts: mp.quiz.attempts + 1, passed: mp.quiz.passed || passed, missed },
+          },
+        },
+      };
+    });
+  }, [finished]);
+
+  const restart = () => {
+    setI(0); setPicked(null); setChecked(false); setAnswers([]); setFinished(false);
+  };
+
+  if (finished) {
+    const missed = mod.quiz.map((qq, k) => ({ qq, k })).filter(({ k }) => !answers[k]);
+    return (
+      <div className="fw-page">
+        <div className="fw-card fw-quiz" style={{ textAlign: "center" }}>
+          <div className="fw-eyebrow">Module {mod.n} quiz</div>
+          <div className="fw-score" style={{ color: passed ? "var(--green)" : "var(--amber)", margin: "12px 0 6px" }}>
+            {score}/{mod.quiz.length}
+          </div>
+          <h2 style={{ margin: "0 0 6px" }}>
+            {passed ? "You passed this module quiz" : "Not quite there yet"}
+          </h2>
+          <p style={{ fontSize: 14.2, color: "var(--muted)", lineHeight: 1.6 }}>
+            {passed
+              ? "The action task is the last step before the next module unlocks."
+              : `You need ${Math.ceil(mod.quiz.length * PASS_MARK)} correct answers to pass. Review the lessons below and try again.`}
+          </p>
+
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
+            <button className="fw-btn ghost" onClick={restart}><RotateCcw size={15} /> Retake quiz</button>
+            {passed ? (
+              <button className="fw-btn" onClick={() => go({ name: "task", id: mod.n })}>
+                Go to the action task <ChevronRight size={16} />
+              </button>
+            ) : (
+              <button className="fw-btn" onClick={() => go({ name: "module", id: mod.n, lesson: 1 })}>
+                Back to the lessons
+              </button>
+            )}
+          </div>
+
+          {missed.length ? (
+            <div className="fw-review">
+              <div className="fw-eyebrow" style={{ marginBottom: 12 }}>Questions to review</div>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {missed.map(({ qq, k }) => (
+                  <li key={k}>
+                    <b>{k + 1}. {qq.prompt}</b>
+                    <br />
+                    Correct answer: {qq.options.find((o) => o.correct).text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fw-page">
+      <button className="fw-btn quiet" onClick={() => go({ name: "module", id: mod.n, lesson: 1 })}>
+        <ChevronLeft size={15} /> Back to lessons
+      </button>
+      <div className="fw-card fw-quiz">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="fw-bar" style={{ flex: 1 }}>
+            <i style={{ width: `${((i + (checked ? 1 : 0)) / mod.quiz.length) * 100}%` }} />
+          </div>
+          <span className="fw-eyebrow">Question {i + 1} of {mod.quiz.length}</span>
+        </div>
+
+        {i === 0 && mod.quizIntro ? (
+          <p style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6, marginTop: 14 }}>
+            {mod.quizIntro}
+          </p>
+        ) : null}
+
+        <h2>{q.prompt}</h2>
+
+        {q.options.map((o, k) => {
+          let cls = "fw-opt";
+          if (!checked && picked === k) cls += " sel";
+          if (checked && k === correctIndex) cls += " right";
+          if (checked && picked === k && k !== correctIndex) cls += " wrong";
+          return (
+            <button key={k} className={cls} disabled={checked} onClick={() => setPicked(k)}>
+              <span className="mark">
+                {(!checked && picked === k) || (checked && k === correctIndex) ? <Check size={12} /> : null}
+                {checked && picked === k && k !== correctIndex ? <X size={12} /> : null}
+              </span>
+              <span>{o.text}</span>
+            </button>
+          );
+        })}
+
+        {checked ? (
+          <div className={`fw-fb ${picked === correctIndex ? "ok" : "no"}`}>
+            <b>{picked === correctIndex ? "Correct" : "Not correct"}</b>
+            {q.feedback}
+          </div>
+        ) : null}
+
+        <div className="fw-docfoot">
+          <span className="fw-eyebrow">
+            {answers.filter(Boolean).length} correct so far
+          </span>
+          {checked ? (
+            <button className="fw-btn" onClick={next}>
+              {i + 1 === mod.quiz.length ? "See results" : "Next question"} <ChevronRight size={16} />
+            </button>
+          ) : (
+            <button className="fw-btn" disabled={picked === null} onClick={check}>Check answer</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Action task
+ * ------------------------------------------------------------------ */
+function ActionTask({ mod, progress, setProgress, go }) {
+  const st = moduleState(progress, mod);
+  const [refl, setRefl] = useState(st.task.reflection);
+
+  const update = (patch) =>
+    setProgress((p) => {
+      const mp = moduleProgress(p, mod.n);
+      return { ...p, modules: { ...p.modules, [mod.n]: { ...mp, task: { ...mp.task, ...patch } } } };
+    });
+
+  const toggleStep = (k) => {
+    const steps = [...st.task.steps];
+    steps[k] = !steps[k];
+    update({ steps });
+  };
+
+  const allSteps = st.task.steps.every(Boolean);
+
+  return (
+    <div className="fw-page">
+      <button className="fw-btn quiet" onClick={() => go({ name: "module", id: mod.n, lesson: 1 })}>
+        <ChevronLeft size={15} /> Back to lessons
+      </button>
+
+      <div className="fw-card fw-task">
+        <div className="fw-eyebrow">Module {mod.n} · Action task</div>
+        <h1 style={{ fontSize: 24, margin: "6px 0 10px" }}>{mod.actionTask.title}</h1>
+        {mod.practiceIntro ? (
+          <p style={{ fontSize: 14.5, color: "var(--ink-soft)", lineHeight: 1.65, marginBottom: 10 }}>
+            {mod.practiceIntro}
+          </p>
+        ) : null}
+        {mod.taskPurpose ? (
+          <div className="fw-callout" style={{ margin: "14px 0" }}>
+            <div className="lbl">Purpose of the action task</div>
+            <p style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>{mod.taskPurpose}</p>
+          </div>
+        ) : null}
+        <p style={{ fontSize: 14.5, color: "var(--muted)", lineHeight: 1.6 }}>
+          {mod.taskInstruction || "Three steps to complete this week."}
+        </p>
+
+        <div style={{ margin: "18px 0 26px" }}>
+          {mod.actionTask.steps.map((s, k) => (
+            <button key={k} className="fw-check" onClick={() => toggleStep(k)}>
+              <span className={`box ${st.task.steps[k] ? "on" : ""}`}>
+                {st.task.steps[k] ? <Check size={13} /> : null}
+              </span>
+              <span style={{ color: st.task.steps[k] ? "var(--muted)" : "var(--ink)" }}>{s}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="fw-eyebrow" style={{ marginBottom: 10 }}>Reflection · there are no wrong answers</div>
+        {mod.reflection.map((r, k) => (
+          <div className="fw-refl" key={k} style={{ marginBottom: 16 }}>
+            <p>{r}</p>
+            <textarea
+              value={refl[k] || ""}
+              placeholder="Write your answer"
+              onChange={(e) => {
+                const copy = [...refl];
+                copy[k] = e.target.value;
+                setRefl(copy);
+              }}
+              onBlur={() => update({ reflection: refl })}
+            />
+          </div>
+        ))}
+
+        <div className="fw-docfoot">
+          <span className="fw-eyebrow">
+            {st.quiz.passed ? "Quiz passed" : "Pass the quiz to complete this module"}
+          </span>
+          <button
+            className="fw-btn"
+            disabled={!allSteps || !st.quiz.passed}
+            onClick={() => {
+              update({ reflection: refl, done: true });
+              go({ name: "dashboard" });
+            }}
+          >
+            {st.task.done ? "Saved" : "Complete module"} <Check size={16} />
+          </button>
+        </div>
+
+        {mod.disclaimer ? <p className="fw-disclaimer">{mod.disclaimer}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ *  Root
+ * ------------------------------------------------------------------ */
+function FinWiseApp() {
+  const [user, setUser] = useState(null);
+  const [progress, setProgress] = useState(emptyProgress());
+  const [route, setRoute] = useState({ name: "dashboard" });
+  const [ready, setReady] = useState(false);
+
+  // load session
+  useEffect(() => {
+    (async () => {
+      const u = await storeGet("finwise:user");
+      if (u) {
+        const p = (await storeGet(`finwise:progress:${slug(u.email)}`)) || emptyProgress();
+        setUser(u);
+        setProgress({ ...p, streak: bumpStreak(p.streak || { days: 1, last: today() }) });
+      }
+      setReady(true);
+    })();
+  }, []);
+
+  // save progress
+  useEffect(() => {
+    if (!user || !ready) return;
+    storeSet(`finwise:progress:${slug(user.email)}`, progress);
+  }, [progress, user, ready]);
+
+  const signIn = async (u) => {
+    const p = (await storeGet(`finwise:progress:${slug(u.email)}`)) || emptyProgress();
+    await storeSet("finwise:user", u);
+    setUser(u);
+    setProgress({ ...p, streak: bumpStreak(p.streak || { days: 1, last: today() }) });
+    setRoute({ name: "dashboard" });
+  };
+
+  const signOut = async () => {
+    try { await LOCAL.delete("finwise:user"); } catch (e) { /* ignore */ }
+    setUser(null);
+    setRoute({ name: "dashboard" });
+  };
+
+  if (!ready)
+    return (
+      <div className="fw" style={{ display: "grid", placeItems: "center", height: 320 }}>
+        <style>{CSS}</style>
+        <span style={{ color: "#6B808F", fontSize: 14 }}>Loading your path…</span>
+      </div>
+    );
+
+  if (!user) return <Entry onEnter={signIn} />;
+
+  const mod = route.id ? MODULES.find((m) => m.n === route.id) : null;
+
+  const nav = (
+    <nav className="fw-nav">
+      <button className={route.name === "dashboard" ? "on" : ""} onClick={() => setRoute({ name: "dashboard" })}>
+        <ListChecks size={16} /> Dashboard
+      </button>
+      <button
+        className={route.name !== "dashboard" ? "on" : ""}
+        onClick={() => setRoute({ name: "module", id: 1, lesson: 1 })}
+      >
+        <BookOpen size={16} /> Modules
+      </button>
+    </nav>
+  );
+
+  return (
+    <div className="fw">
+      <style>{CSS}</style>
+
+      <div className="fw-topbar">
+        <div className="fw-brand" style={{ fontSize: 16 }}>FinWise</div>
+        {nav}
+      </div>
+
+      <div className="fw-shell">
+        <aside className="fw-side">
+          <div className="fw-brand">FinWise <span>ACADEMY</span></div>
+          {nav}
+          <div className="fw-side-foot">
+            <div className="who">{user.name}</div>
+            <div className="mail">{user.email}</div>
+            {user.city ? <div className="mail">{user.city}</div> : null}
+            <button onClick={() => setProgress((p) => ({ ...p, unlockAll: !p.unlockAll }))}>
+              {progress.unlockAll ? <Circle size={14} /> : <Lock size={14} />}
+              {progress.unlockAll ? "Demo mode on" : "Unlock all modules"}
+            </button>
+            <button onClick={signOut}><LogOut size={14} /> Sign out</button>
+          </div>
+        </aside>
+
+        <main className="fw-main">
+          {route.name === "dashboard" ? (
+            <Dashboard user={user} progress={progress} go={setRoute} />
+          ) : null}
+          {route.name === "module" && mod ? (
+            <ModuleView mod={mod} progress={progress} setProgress={setProgress} route={route} go={setRoute} />
+          ) : null}
+          {route.name === "quiz" && mod ? (
+            <Quiz mod={mod} progress={progress} setProgress={setProgress} go={setRoute} />
+          ) : null}
+          {route.name === "task" && mod ? (
+            <ActionTask mod={mod} progress={progress} setProgress={setProgress} go={setRoute} />
+          ) : null}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById("root")).render(<FinWiseApp />);
+
+</script>
+</body>
+</html>
