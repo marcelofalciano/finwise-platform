@@ -51,8 +51,8 @@ var LOCAL = {
 const ADMINS = ["mfalciano@gmail.com"];
 
 const SUPABASE = {
-    url: "https://nzmsqidpvxmigjicwsgv.supabase.co",      // ex.: https://abcdefghijklm.supabase.co
-    anonKey: "sb_publishable__tYqbvnhjVBsLj1_DDm2Ww_YJ7Cm5ci",  // chave "anon public" do projeto
+    url: "",      // ex.: https://abcdefghijklm.supabase.co
+    anonKey: "",  // chave "anon public" do projeto
 };
 /* ====================================================================== */
 
@@ -346,6 +346,10 @@ function GLOS() {
 }
 const PANEL_EXAMPLE = {"pessoas": 14, "ativas_7d": 9, "concluiram": 3, "licoes_total": 212, "acoes_total": 31, "periodo": {"inicio": "2026-09-17T12:00:00Z", "fim": "2026-10-27T12:00:00Z"}, "modulos": [{"modulo": "1", "iniciaram": 14, "licoes_media": 9.1, "quiz_tentou": 12, "quiz_passou": 11, "nota_media": 12.4, "tarefa_feita": 10, "nota_util": 4.5, "n_util": 11}, {"modulo": "2", "iniciaram": 12, "licoes_media": 7.8, "quiz_tentou": 10, "quiz_passou": 8, "nota_media": 11.2, "tarefa_feita": 7, "nota_util": 4.2, "n_util": 9}, {"modulo": "3", "iniciaram": 9, "licoes_media": 6.2, "quiz_tentou": 7, "quiz_passou": 6, "nota_media": 11.7, "tarefa_feita": 5, "nota_util": 4.4, "n_util": 6}, {"modulo": "4", "iniciaram": 6, "licoes_media": 4.5, "quiz_tentou": 4, "quiz_passou": 3, "nota_media": 8.5, "tarefa_feita": 3, "nota_util": 4.0, "n_util": 4}, {"modulo": "5", "iniciaram": 3, "licoes_media": 3.0, "quiz_tentou": 2, "quiz_passou": 1, "nota_media": 7.0, "tarefa_feita": 1, "nota_util": 4.0, "n_util": 2}, {"modulo": "6", "iniciaram": 2, "licoes_media": 2.5, "quiz_tentou": 1, "quiz_passou": 1, "nota_media": 9.0, "tarefa_feita": 1, "nota_util": 5.0, "n_util": 1}], "resultados": [{"modulo": "1", "opcao": 0, "quantas": 9}, {"modulo": "1", "opcao": 1, "quantas": 6}, {"modulo": "1", "opcao": 3, "quantas": 4}, {"modulo": "1", "opcao": 2, "quantas": 2}, {"modulo": "2", "opcao": 1, "quantas": 7}, {"modulo": "2", "opcao": 0, "quantas": 6}, {"modulo": "2", "opcao": 3, "quantas": 5}, {"modulo": "2", "opcao": 2, "quantas": 4}, {"modulo": "3", "opcao": 1, "quantas": 5}, {"modulo": "3", "opcao": 0, "quantas": 4}, {"modulo": "3", "opcao": 2, "quantas": 3}, {"modulo": "3", "opcao": 3, "quantas": 2}, {"modulo": "4", "opcao": 0, "quantas": 2}, {"modulo": "4", "opcao": 2, "quantas": 2}, {"modulo": "4", "opcao": 1, "quantas": 1}, {"modulo": "5", "opcao": 0, "quantas": 1}, {"modulo": "5", "opcao": 2, "quantas": 1}, {"modulo": "6", "opcao": 1, "quantas": 1}], "erros": [{"modulo": "3", "questao": 9, "quantas": 4}, {"modulo": "1", "questao": 11, "quantas": 6}, {"modulo": "1", "questao": 7, "quantas": 5}, {"modulo": "3", "questao": 4, "quantas": 4}, {"modulo": "1", "questao": 2, "quantas": 4}, {"modulo": "2", "questao": 3, "quantas": 4}, {"modulo": "4", "questao": 1, "quantas": 2}, {"modulo": "2", "questao": 8, "quantas": 2}], "comentarios": [{"modulo": "1", "i": 0}, {"modulo": "2", "i": 1}, {"modulo": "3", "i": 2}, {"modulo": "1", "i": 3}, {"modulo": "2", "i": 4}, {"modulo": "4", "i": 5}]};
 const PANEL_EXAMPLE_QUOTES = [{"en": "I finally understood why my score dropped when I closed my oldest card.", "pt": "Finalmente entendi por que minha pontuação caiu quando fechei meu cartão mais antigo.", "es": "Por fin entendí por qué mi puntaje bajó cuando cerré mi tarjeta más antigua."}, {"en": "The part about the statement closing date was new to me. I was paying on the wrong day.", "pt": "A parte da data de fechamento da fatura era novidade para mim. Eu pagava no dia errado.", "es": "La parte de la fecha de cierre del estado de cuenta era nueva para mí. Yo pagaba el día equivocado."}, {"en": "Listing every recurring charge took twenty minutes and I found three I had forgotten.", "pt": "Listar todas as cobranças recorrentes levou vinte minutos e achei três que eu tinha esquecido.", "es": "Hacer la lista de los cargos recurrentes tomó veinte minutos y encontré tres que había olvidado."}, {"en": "Knowing the report is free once a year from each bureau changed how I check it.", "pt": "Saber que o relatório é gratuito uma vez por ano em cada bureau mudou como eu confiro.", "es": "Saber que el reporte es gratis una vez al año en cada bureau cambió la forma en que lo reviso."}, {"en": "The examples with real numbers helped more than the definitions.", "pt": "Os exemplos com números reais ajudaram mais do que as definições.", "es": "Los ejemplos con números reales ayudaron más que las definiciones."}, {"en": "I had never compared the fee schedules of two banks side by side.", "pt": "Eu nunca tinha comparado a tabela de tarifas de dois bancos lado a lado.", "es": "Nunca había comparado las tablas de cargos de dos bancos una al lado de la otra."}];
+/* Demonstracao: o painel mostra apenas o relatorio de exemplo.
+   Troque para false quando houver um grupo real para exibir. */
+const PAINEL_SO_EXEMPLO = true;
+
 function exemploDoPainel() {
     return { ...PANEL_EXAMPLE, comentarios: PANEL_EXAMPLE.comentarios.map((c) => ({
         modulo: c.modulo,
@@ -388,7 +392,7 @@ function GroupPanel() {
     if (estado.carregando)
         return React.createElement("div", { className: "fw-page" },
             React.createElement("p", { className: "fw-eyebrow" }, t("panel.loading")));
-    if (estado.erro && !verExemplo)
+    if (estado.erro && !verExemplo && !PAINEL_SO_EXEMPLO)
         return React.createElement("div", { className: "fw-page" },
             React.createElement("h1", null, t("panel.title")),
             React.createElement("p", { className: "fw-plead" },
@@ -400,7 +404,7 @@ function GroupPanel() {
 
     const real = estado.dados || {};
     const semDados = !(real.pessoas > 0);
-    const exemplo = verExemplo || semDados;
+    const exemplo = PAINEL_SO_EXEMPLO || verExemplo || semDados;
     const d = exemplo ? exemploDoPainel() : real;
     const modulos = d.modulos || [];
     const erros = d.erros || [];
@@ -446,14 +450,14 @@ function GroupPanel() {
                 React.createElement("p", { className: "fw-plead" }, t(exemplo ? "panel.ex.lead" : "panel.lead")),
                 d.periodo && d.periodo.inicio ? React.createElement("p", { className: "fw-pperiod" },
                     t("panel.period", { a: data(d.periodo.inicio), b: data(d.periodo.fim) })) : null),
-            React.createElement("div", { className: "fw-pactions" },
+            PAINEL_SO_EXEMPLO ? null : React.createElement("div", { className: "fw-pactions" },
                 (verExemplo || !semDados) ? React.createElement("button", { className: "fw-btn fw-btn-ghost", type: "button",
                     onClick: () => setVerExemplo((v) => !v) }, verExemplo ? t("panel.ex.hide") : t("panel.ex.show")) : null,
                 React.createElement("button", { className: "fw-btn fw-btn-ghost", type: "button", onClick: carrega }, t("panel.reload")))),
 
         exemplo ? React.createElement("div", { className: "fw-pexample" },
             React.createElement("span", { className: "fw-pextag" }, t("panel.ex.tag")),
-            React.createElement("p", null, (semDados && !estado.erro) ? t("panel.emptyLead") : t("panel.ex.banner"))) : null,
+            React.createElement("p", null, (!PAINEL_SO_EXEMPLO && semDados && !estado.erro) ? t("panel.emptyLead") : t("panel.ex.banner"))) : null,
 
         React.createElement("div", { className: "fw-pgrid" },
             card(t("panel.people"), pessoas, d.ativas_7d != null ? t("panel.active") + ": " + d.ativas_7d : null),
