@@ -51,8 +51,8 @@ var LOCAL = {
 const ADMINS = ["mfalciano@gmail.com"];
 
 const SUPABASE = {
-    url: "https://nzmsqidpvxmigjicwsgv.supabase.co",      // ex.: https://abcdefghijklm.supabase.co
-    anonKey: "sb_publishable__tYqbvnhjVBsLj1_DDm2Ww_YJ7Cm5ci",  // chave "anon public" do projeto
+    url: "",      // ex.: https://abcdefghijklm.supabase.co
+    anonKey: "",  // chave "anon public" do projeto
 };
 /* ====================================================================== */
 
@@ -171,6 +171,12 @@ async function remoteSaveProgress(data) {
         body: JSON.stringify(row),
     }, ss.access_token));
     return r.ok;
+}
+
+// Em demonstracao qualquer pessoa ve o painel, porque ele mostra apenas o
+// relatorio de exemplo. Fora dela, so administrador.
+function podeVerPainel(email) {
+    return PAINEL_SO_EXEMPLO || ehAdmin(email);
 }
 
 function ehAdmin(email) {
@@ -808,7 +814,8 @@ const CSS = `
 .fw-langmenu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 60;
     background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 4px;
     box-shadow: 0 10px 30px rgba(13,27,42,.16); min-width: 140px; }
-.fw .fw-langopt { display: block; width: 100%; text-align: left; background: none; border: 0;
+.fw .fw-side .fw-langmenu { top: auto; bottom: calc(100% + 6px); right: auto; left: 0; }
+.fw-langopt { display: block; width: 100%; text-align: left; background: none; border: 0;
     padding: 8px 12px; border-radius: 7px; font-size: 13px; color: var(--ink); cursor: pointer; }
 .fw-langopt:hover { background: rgba(29,158,117,.10); }
 .fw-langopt.ativo { color: var(--green); font-weight: 600; }
@@ -1723,7 +1730,7 @@ function FinWiseApp() {
         React.createElement("button", { className: route.name === "glossary" ? "on" : "", onClick: () => setRoute({ name: "glossary" }) },
             React.createElement(BookMarked, { size: 16 }),
             t("nav.glossary")),
-        ehAdmin(user.email) ? React.createElement("button", { className: route.name === "panel" ? "on" : "", onClick: () => setRoute({ name: "panel" }) },
+        podeVerPainel(user.email) ? React.createElement("button", { className: route.name === "panel" ? "on" : "", onClick: () => setRoute({ name: "panel" }) },
             React.createElement(Trophy, { size: 16 }),
             t("nav.panel")) : null));
     return (React.createElement("div", { className: "fw" },
@@ -1760,7 +1767,7 @@ function FinWiseApp() {
                 route.name === "quiz" && mod ? (React.createElement(Quiz, { mod: mod, progress: progress, setProgress: setProgress, go: setRoute })) : null,
                 route.name === "tasks" ? (React.createElement(TasksView, { progress: progress, setProgress: setProgress, go: setRoute })) : null,
                 route.name === "glossary" ? React.createElement(GlossaryView, { go: setRoute }) : null,
-                route.name === "panel" && ehAdmin(user.email) ? React.createElement(GroupPanel, null) : null,
+                route.name === "panel" && podeVerPainel(user.email) ? React.createElement(GroupPanel, null) : null,
                 route.name === "task" && mod ? (React.createElement(ActionTask, { mod: mod, progress: progress, setProgress: setProgress, go: setRoute })) : null))));
 }
 
